@@ -35,6 +35,15 @@
             "scripts": []
           },
           "configurations": {
+            "hmr": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.hmr.ts"
+                }
+              ],
+              "aot": true
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -60,6 +69,9 @@
             "browserTarget": "toh:build"
           },
           "configurations": {
+            "hmr": {
+              "browserTarget": "toh:build:hmr"
+            },
             "production": {
               "browserTarget": "toh:build:production"
             }
