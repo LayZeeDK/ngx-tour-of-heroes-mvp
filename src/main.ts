@@ -1,4 +1,3 @@
-// #docregion
 import { enableProdMode, NgModuleRef } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
