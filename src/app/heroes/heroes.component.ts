@@ -22,7 +22,6 @@ export class HeroesComponent implements OnInit {
     .subscribe(heroes => this.heroes = heroes);
   }
 
-  // #docregion add
   add(name: string): void {
     name = name.trim();
     if (!name) { return; }
@@ -31,13 +30,10 @@ export class HeroesComponent implements OnInit {
         this.heroes.push(hero);
       });
   }
-  // #enddocregion add
 
-  // #docregion delete
   delete(hero: Hero): void {
     this.heroes = this.heroes.filter(h => h !== hero);
     this.heroService.deleteHero(hero).subscribe();
   }
-  // #enddocregion delete
 
 }

@@ -1,4 +1,3 @@
-// #docregion , init
 import { InMemoryDbService } from 'angular-in-memory-web-api';
 
 export class InMemoryDataService implements InMemoryDbService {
