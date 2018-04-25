@@ -7,6 +7,7 @@ import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardContainerComponent } from './dashboard/dashboard.container';
 import { HeroDetailComponent } from './hero-detail/hero-detail.component';
 import { HeroSearchComponent } from './hero-search/hero-search.component';
 import { HeroesComponent } from './heroes/heroes.component';
@@ -30,6 +31,7 @@ import { MessagesComponent } from './messages/messages.component';
   declarations: [
     AppComponent,
     DashboardComponent,
+    DashboardContainerComponent,
     HeroesComponent,
     HeroDetailComponent,
     MessagesComponent,
