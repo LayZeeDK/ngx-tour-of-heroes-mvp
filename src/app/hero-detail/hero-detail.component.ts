@@ -10,5 +10,5 @@ import { Hero } from '../hero';
 export class HeroDetailComponent {
   @Input() hero: Hero;
   @Output() cancel: EventEmitter<void> = new EventEmitter();
-  @Output() heroChange: EventEmitter<Hero> = new EventEmitter<Hero>();
+  @Output() heroChange: EventEmitter<Hero> = new EventEmitter();
 }
