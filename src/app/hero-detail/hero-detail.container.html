@@ -1,0 +1,4 @@
+<app-hero-detail-ui
+  [hero]="hero$ | async"
+  (cancel)="goBack()"
+  (heroChange)="save($event)"></app-hero-detail-ui>
