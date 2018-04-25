@@ -13,6 +13,9 @@ import {
   HeroDetailContainerComponent,
 } from './hero-detail/hero-detail.container';
 import { HeroSearchComponent } from './hero-search/hero-search.component';
+import {
+  HeroSearchContainerComponent,
+} from './hero-search/hero-search.container';
 import { HeroesComponent } from './heroes/heroes.component';
 import { InMemoryDataService } from './in-memory-data.service';
 import { MessagesComponent } from './messages/messages.component';
@@ -39,7 +42,8 @@ import { MessagesComponent } from './messages/messages.component';
     HeroDetailComponent,
     HeroDetailContainerComponent,
     MessagesComponent,
-    HeroSearchComponent
+    HeroSearchComponent,
+    HeroSearchContainerComponent,
   ],
   bootstrap: [ AppComponent ]
 })

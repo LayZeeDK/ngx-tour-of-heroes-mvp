@@ -1,36 +1,49 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { Hero } from '../hero';
-import { HeroService } from '../hero.service';
 
 @Component({
-  selector: 'app-hero-search',
+  selector: 'app-hero-search-ui',
   templateUrl: './hero-search.component.html',
   styleUrls: [ './hero-search.component.css' ]
 })
-export class HeroSearchComponent implements OnInit {
-  heroes$: Observable<Hero[]>;
-  private searchTerms = new Subject<string>();
+export class HeroSearchComponent implements OnDestroy, OnInit {
+  @Input() heroes: ReadonlyArray<Hero>;
+  @Input() title: string;
+  @Output() search: EventEmitter<string> = new EventEmitter();
 
-  constructor(private heroService: HeroService) {}
+  private destroy: Subject<void> = new Subject();
+  private searchTerms: Subject<string> = new Subject();
+  private searchTerms$: Observable<string> = this.searchTerms.pipe(
+    // wait 300ms after each keystroke before considering the term
+    debounceTime(300),
 
-  // Push a search term into the observable stream.
-  search(term: string): void {
-    this.searchTerms.next(term);
-  }
+    // ignore new term if same as previous term
+    distinctUntilChanged(),
+
+    // unsubscribe when component is destroyed
+    takeUntil(this.destroy),
+  );
 
   ngOnInit(): void {
-    this.heroes$ = this.searchTerms.pipe(
-      // wait 300ms after each keystroke before considering the term
-      debounceTime(300),
+    this.searchTerms$.subscribe(term => this.search.emit(term));
+  }
 
-      // ignore new term if same as previous term
-      distinctUntilChanged(),
+  ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
+  }
 
-      // switch to new search observable each time the term changes
-      switchMap((term: string) => this.heroService.searchHeroes(term)),
-    );
+  emitSearch(term: string): void {
+    this.searchTerms.next(term);
   }
 }
