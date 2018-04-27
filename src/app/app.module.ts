@@ -20,6 +20,7 @@ import { HeroesComponent } from './heroes/heroes.component';
 import { InMemoryDataService } from './in-memory-data.service';
 import { MessagesComponent } from './messages/messages.component';
 import { HeroesContainerComponent } from './heroes/heroes.container';
+import { MessagesContainerComponent } from './messages/messages.container';
 
 @NgModule({
   imports: [
@@ -44,6 +45,7 @@ import { HeroesContainerComponent } from './heroes/heroes.container';
     HeroDetailComponent,
     HeroDetailContainerComponent,
     MessagesComponent,
+    MessagesContainerComponent,
     HeroSearchComponent,
     HeroSearchContainerComponent,
   ],
