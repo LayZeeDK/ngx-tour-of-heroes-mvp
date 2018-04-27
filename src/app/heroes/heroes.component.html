@@ -1,11 +1,11 @@
-<h2>My Heroes</h2>
+<h2>{{title}}</h2>
 
 <div>
   <label>Hero name:
     <input #heroName />
   </label>
   <!-- (click) passes input value to add() and then clears the input -->
-  <button (click)="add(heroName.value); heroName.value=''">
+  <button (click)="addHero(heroName.value); heroName.value=''">
     add
   </button>
 </div>
@@ -16,6 +16,6 @@
       <span class="badge">{{hero.id}}</span> {{hero.name}}
     </a>
     <button class="delete" title="delete hero"
-    (click)="delete(hero)">x</button>
+    (click)="remove.emit(hero)">x</button>
   </li>
 </ul>

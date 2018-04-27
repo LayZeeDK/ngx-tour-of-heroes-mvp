@@ -1,0 +1,5 @@
+<app-heroes-ui
+  [heroes]="heroes$ | async"
+  title="My Heroes"
+  (add)="add($event)"
+  (remove)="delete($event)"></app-heroes-ui>
