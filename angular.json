@@ -70,7 +70,9 @@
           },
           "configurations": {
             "hmr": {
-              "browserTarget": "toh:build:hmr"
+              "browserTarget": "toh:build:hmr",
+              "hmr": true,
+              "hmrWarning": false
             },
             "production": {
               "browserTarget": "toh:build:production"
