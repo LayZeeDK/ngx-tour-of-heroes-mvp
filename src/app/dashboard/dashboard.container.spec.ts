@@ -1,24 +1,10 @@
 import { asyncScheduler, Observable, of as observableOf } from 'rxjs';
 import { first } from 'rxjs/operators';
 
+import { femaleMarvelHeroes } from '../../test/female-marvel-heroes';
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 import { DashboardContainerComponent } from './dashboard.container';
-
-const femaleMarvelHeroes: Hero[] = [
-  { id: 1, name: 'Black Widow' },
-  { id: 2, name: 'Captain Marvel' },
-  { id: 3, name: 'Medusa' },
-  { id: 4, name: 'Ms. Marvel' },
-  { id: 5, name: 'Scarlet Witch' },
-  { id: 6, name: 'She-Hulk' },
-  { id: 7, name: 'Storm' },
-  { id: 8, name: 'Wasp' },
-  { id: 9, name: 'Rogue' },
-  { id: 10, name: 'Elektra' },
-  { id: 11, name: 'Gamora' },
-  { id: 12, name: 'Hawkeye (Kate Bishop)' },
-];
 
 describe('DashboardContainerComponent', () => {
   describe('emits top heroes', () => {
@@ -49,8 +35,10 @@ describe('DashboardContainerComponent', () => {
       expect(heroes[0]).toEqual({ id: 2, name: 'Captain Marvel' });
     });
 
-    it(`delegates to ${HeroService.prototype.constructor.name}`, () => {
-      component.topHeroes$.subscribe();
+    it(`delegates to ${HeroService.prototype.constructor.name} immediately`, async () => {
+      expect(heroServiceStub.getHeroes).toHaveBeenCalledTimes(1);
+
+      await component.topHeroes$.toPromise();
 
       expect(heroServiceStub.getHeroes).toHaveBeenCalledTimes(1);
     });
