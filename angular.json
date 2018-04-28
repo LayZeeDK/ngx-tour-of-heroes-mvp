@@ -132,7 +132,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "toh:serve"
+            "devServerTarget": "toh:serve:production"
           }
         },
         "lint": {
