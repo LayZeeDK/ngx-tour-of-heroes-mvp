@@ -62,14 +62,14 @@ describe('Tutorial part 6', () => {
 
       appDashboardHref: navElts.get(0),
       appDashboard: element(by.css('app-root app-dashboard')),
-      topHeroes: element.all(by.css('app-root app-dashboard > div h4')),
+      topHeroes: element.all(by.css('app-root app-dashboard-ui > div h4')),
 
       appHeroesHref: navElts.get(1),
       appHeroes: element(by.css('app-root app-heroes')),
       allHeroes: element.all(by.css('app-root app-heroes li')),
-      selectedHeroSubview: element(by.css('app-root app-heroes > div:last-child')),
+      selectedHeroSubview: element(by.css('app-root app-heroes-ui > div:last-child')),
 
-      heroDetail: element(by.css('app-root app-hero-detail > div')),
+      heroDetail: element(by.css('app-root app-hero-detail-ui > div')),
 
       searchBox: element(by.css('#search-box')),
       searchResults: element.all(by.css('.search-result li'))
