@@ -4,13 +4,17 @@ import { Subscription } from 'rxjs';
 import { HeroSearchPresenter } from './hero-search.presenter';
 
 describe('HeroSearchPresenter', () => {
+  let presenter: HeroSearchPresenter;
+
   beforeEach(() => {
     presenter = new HeroSearchPresenter();
   });
 
-  let presenter: HeroSearchPresenter;
-
   describe('emits search terms', () => {
+    const debounceTime = 300;
+    let searchTermsSpy: jasmine.Spy;
+    let searchTermsSubscription: Subscription;
+
     beforeEach(() => {
       searchTermsSpy = jasmine.createSpy('searchTermsObserver');
       searchTermsSubscription = presenter.searchTerms$
@@ -20,10 +24,6 @@ describe('HeroSearchPresenter', () => {
     afterEach(() => {
       searchTermsSubscription.unsubscribe();
     });
-
-    const debounceTime = 300;
-    let searchTermsSpy: jasmine.Spy;
-    let searchTermsSubscription: Subscription;
 
     it('when a user searches', fakeAsync(() => {
       const gamora = 'gamora';

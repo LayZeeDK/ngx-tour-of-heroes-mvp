@@ -23,6 +23,15 @@ describe('HeroDetailContainerComponent', () => {
       && typeof x.name === 'string';
   }
 
+  const blackWidow: Hero = femaleMarvelHeroes
+    .find(x => x.name === 'Black Widow');
+  let container: HeroDetailContainerComponent;
+  let heroServiceStub: Partial<HeroService>;
+  let locationStub: Partial<Location>;
+  let routeParameters: Subject<Params>;
+  let routeParametersSubscriptionCount = 0;
+  let routeFake: Partial<ActivatedRoute>;
+
   beforeEach(() => {
     routeParameters = new Subject();
     const routeParameters$: Observable<Params> = Observable.create(
@@ -65,15 +74,6 @@ describe('HeroDetailContainerComponent', () => {
   afterEach(() => {
     routeParameters.complete();
   });
-
-  const blackWidow: Hero = femaleMarvelHeroes
-    .find(x => x.name === 'Black Widow');
-  let container: HeroDetailContainerComponent;
-  let heroServiceStub: Partial<HeroService>;
-  let locationStub: Partial<Location>;
-  let routeParameters: Subject<Params>;
-  let routeParametersSubscriptionCount = 0;
-  let routeFake: Partial<ActivatedRoute>;
 
   it('navigates to the previous page', () => {
     container.goBack();
