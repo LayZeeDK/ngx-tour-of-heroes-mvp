@@ -1,7 +1,7 @@
 <div id="search-component">
   <h4>{{title}}</h4>
 
-  <input #searchBox id="search-box" (keyup)="emitSearch(searchBox.value)" />
+  <input #searchBox id="search-box" (keyup)="searchFor(searchBox.value)" />
 
   <ul class="search-result">
     <li *ngFor="let hero of heroes">

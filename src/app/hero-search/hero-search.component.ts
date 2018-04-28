@@ -17,10 +17,9 @@ import { Hero } from '../hero';
   styleUrls: [ './hero-search.component.css' ]
 })
 export class HeroSearchComponent implements OnDestroy, OnInit {
-  @Input() heroes: ReadonlyArray<Hero>;
+  @Input() heroes: Hero[];
   @Input() title: string;
   @Output() search: EventEmitter<string> = new EventEmitter();
-
   private destroy: Subject<void> = new Subject();
   private searchTerms: Subject<string> = new Subject();
   private searchTerms$: Observable<string> = this.searchTerms.pipe(
@@ -30,7 +29,7 @@ export class HeroSearchComponent implements OnDestroy, OnInit {
     // ignore new term if same as previous term
     distinctUntilChanged(),
 
-    // unsubscribe when component is destroyed
+    // complete when component is destroyed
     takeUntil(this.destroy),
   );
 
@@ -43,7 +42,7 @@ export class HeroSearchComponent implements OnDestroy, OnInit {
     this.destroy.complete();
   }
 
-  emitSearch(term: string): void {
+  searchFor(term: string): void {
     this.searchTerms.next(term);
   }
 }

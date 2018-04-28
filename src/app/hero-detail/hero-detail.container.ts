@@ -12,17 +12,15 @@ import { HeroService } from '../hero.service';
   templateUrl: './hero-detail.container.html',
 })
 export class HeroDetailContainerComponent {
-  hero$: Observable<Hero>;
+  hero$: Observable<Hero> = this.route.params.pipe(
+    switchMap(params => this.heroService.getHero(+params.id)),
+  );
 
   constructor(
     private route: ActivatedRoute,
     private heroService: HeroService,
     private location: Location,
-  ) {
-    this.hero$ = route.params.pipe(
-      switchMap(params => this.heroService.getHero(+params.id)),
-    );
-  }
+  ) {}
 
   goBack(): void {
     this.location.back();

@@ -10,16 +10,13 @@ import { HeroService } from '../hero.service';
   templateUrl: './hero-search.container.html',
 })
 export class HeroSearchContainerComponent {
-  heroes$: Observable<ReadonlyArray<Hero>>;
-
   private searchTerms: Subject<string> = new Subject();
+  heroes$: Observable<Hero[]> = this.searchTerms.pipe(
+    // switch to new search observable each time the term changes
+    switchMap(term => this.heroService.searchHeroes(term)),
+  );
 
-  constructor(private heroService: HeroService) {
-    this.heroes$ = this.searchTerms.pipe(
-      // switch to new search observable each time the term changes
-      switchMap((term: string) => this.heroService.searchHeroes(term)),
-    );
-  }
+  constructor(private heroService: HeroService) {}
 
   // Push a search term into the observable stream.
   search(term: string): void {

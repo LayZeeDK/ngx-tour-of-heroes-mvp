@@ -10,10 +10,16 @@ import { map, tap, catchError } from 'rxjs/operators';
 })
 export class HeroesContainerComponent implements OnInit {
   private heroes: BehaviorSubject<Hero[]> = new BehaviorSubject([]);
-
   heroes$: Observable<Hero[]> = this.heroes.asObservable();
 
   constructor(private heroService: HeroService) {}
+
+  ngOnInit(): void {
+    this.heroService.getHeroes()
+      .subscribe(
+        heroes => this.heroes.next(heroes),
+        error => this.heroes.error(error));
+  }
 
   add(name: string): void {
     this.heroService.addHero({ name } as Hero)
@@ -26,13 +32,6 @@ export class HeroesContainerComponent implements OnInit {
       .subscribe(
         undefined,
         () => this.addHero(hero));
-  }
-
-  ngOnInit(): void {
-    this.heroService.getHeroes()
-      .subscribe(
-        heroes => this.heroes.next(heroes),
-        error => this.heroes.error(error));
   }
 
   private addHero(hero: Hero): void {

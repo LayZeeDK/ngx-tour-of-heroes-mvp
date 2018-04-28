@@ -8,7 +8,6 @@ import { Hero } from '../hero';
   styleUrls: [ './dashboard.component.css' ]
 })
 export class DashboardComponent {
-  @Input() heroes: ReadonlyArray<Hero>;
-
+  @Input() heroes: Hero[];
   @Input() title: string;
 }

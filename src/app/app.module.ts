@@ -49,6 +49,6 @@ import { MessagesContainerComponent } from './messages/messages.container';
     HeroSearchComponent,
     HeroSearchContainerComponent,
   ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [ AppComponent ],
 })
 export class AppModule { }

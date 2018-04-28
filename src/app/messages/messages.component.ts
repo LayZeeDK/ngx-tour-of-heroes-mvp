@@ -9,6 +9,7 @@ import { MessageService } from '../message.service';
 })
 export class MessagesComponent {
   @Input() messages: string[];
+  @Input() title: string;
   @Output() clear: EventEmitter<void> = new EventEmitter();
 
   get hasMessages(): boolean {

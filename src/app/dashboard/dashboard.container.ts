@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
@@ -10,11 +10,10 @@ import { HeroService } from '../hero.service';
   templateUrl: './dashboard.container.html',
 })
 export class DashboardContainerComponent {
-  topHeroes$: Observable<ReadonlyArray<Hero>>;
+  topHeroes$: Observable<Hero[]> = this.heroService.getHeroes().pipe(
+    startWith([]),
+    map(heroes => heroes.slice(1, 5)),
+  );
 
-  constructor(heroService: HeroService) {
-    this.topHeroes$ = heroService.getHeroes().pipe(
-      map(heroes => heroes.slice(1, 5)),
-    );
-  }
+  constructor(private heroService: HeroService) {}
 }

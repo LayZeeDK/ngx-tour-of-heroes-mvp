@@ -1,8 +1,8 @@
 <div *ngIf="hasMessages">
 
-  <h2>Messages</h2>
+  <h2>{{title}}</h2>
   <button class="clear"
           (click)="clear.emit()">clear</button>
-  <div *ngFor='let message of messages'> {{message}} </div>
+  <div *ngFor="let message of messages"> {{message}} </div>
 
 </div>
