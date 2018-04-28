@@ -107,7 +107,8 @@
                 "input": "src/assets",
                 "output": "/assets"
               }
-            ]
+            ],
+            "watch": true
           }
         },
         "lint": {
