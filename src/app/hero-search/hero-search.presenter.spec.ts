@@ -16,7 +16,7 @@ describe('HeroSearchPresenter', () => {
     let searchTermsSubscription: Subscription;
 
     beforeEach(() => {
-      searchTermsSpy = jasmine.createSpy('searchTermsObserver');
+      searchTermsSpy = jasmine.createSpy('searchTermsSpy');
       searchTermsSubscription = presenter.searchTerms$
         .subscribe(searchTermsSpy);
     });

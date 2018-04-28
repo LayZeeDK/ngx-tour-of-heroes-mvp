@@ -22,10 +22,12 @@ describe('DashboardContainerComponent', () => {
         heroServiceStub as HeroService);
     });
 
-    it('initially emits an empty array', () => {
-      component.topHeroes$.pipe(
+    it('initially emits an empty array', async () => {
+      const heroes = await component.topHeroes$.pipe(
         first(),
-      ).subscribe(heroes => expect(heroes.length).toBe(0));
+      ).toPromise();
+
+      expect(heroes).toEqual([]);
     });
 
     it('emits the top 4 heroes', async () => {
@@ -35,7 +37,7 @@ describe('DashboardContainerComponent', () => {
       expect(heroes[0]).toEqual({ id: 2, name: 'Captain Marvel' });
     });
 
-    it(`delegates to ${HeroService.prototype.constructor.name} immediately`, async () => {
+    it(`immediately delegates to ${HeroService.prototype.constructor.name}`, async () => {
       expect(heroServiceStub.getHeroes).toHaveBeenCalledTimes(1);
 
       await component.topHeroes$.toPromise();
