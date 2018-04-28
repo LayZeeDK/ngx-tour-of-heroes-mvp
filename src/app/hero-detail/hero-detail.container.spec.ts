@@ -29,11 +29,12 @@ describe('HeroDetailContainerComponent', () => {
   let heroServiceStub: Partial<HeroService>;
   let locationStub: Partial<Location>;
   let routeParameters: Subject<Params>;
-  let routeParametersSubscriptionCount = 0;
+  let routeParametersSubscriptionCount: number;
   let routeFake: Partial<ActivatedRoute>;
 
   beforeEach(() => {
     routeParameters = new Subject();
+    routeParametersSubscriptionCount = 0;
     const routeParameters$: Observable<Params> = Observable.create(
       (observer: Observer<Params>): () => void => {
         const routeParametersSubscription: Subscription = routeParameters
