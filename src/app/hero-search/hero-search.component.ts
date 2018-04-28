@@ -6,8 +6,8 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { Hero } from '../hero';
 import { HeroSearchPresenter } from './hero-search.presenter';
@@ -15,7 +15,7 @@ import { HeroSearchPresenter } from './hero-search.presenter';
 @Component({
   selector: 'app-hero-search-ui',
   templateUrl: './hero-search.component.html',
-  styleUrls: [ './hero-search.component.css' ],
+  styleUrls: ['./hero-search.component.css'],
   providers: [HeroSearchPresenter],
 })
 export class HeroSearchComponent implements OnDestroy, OnInit {

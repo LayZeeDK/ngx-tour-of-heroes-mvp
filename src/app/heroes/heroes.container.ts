@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, Subject, concat, BehaviorSubject, throwError } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
-import { map, tap, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-heroes',

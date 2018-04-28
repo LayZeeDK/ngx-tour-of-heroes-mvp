@@ -1,11 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { MessageService } from '../message.service';
-
 @Component({
   selector: 'app-messages-ui',
   templateUrl: './messages.component.html',
-  styleUrls: ['./messages.component.css']
+  styleUrls: ['./messages.component.css'],
 })
 export class MessagesComponent {
   @Input() messages: string[];

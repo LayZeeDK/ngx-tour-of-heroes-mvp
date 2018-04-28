@@ -17,9 +17,9 @@ import {
   HeroSearchContainerComponent,
 } from './hero-search/hero-search.container';
 import { HeroesComponent } from './heroes/heroes.component';
+import { HeroesContainerComponent } from './heroes/heroes.container';
 import { InMemoryDataService } from './in-memory-data.service';
 import { MessagesComponent } from './messages/messages.component';
-import { HeroesContainerComponent } from './heroes/heroes.container';
 import { MessagesContainerComponent } from './messages/messages.container';
 
 @NgModule({

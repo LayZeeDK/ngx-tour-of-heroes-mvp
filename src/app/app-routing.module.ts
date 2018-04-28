@@ -5,7 +5,6 @@ import { DashboardContainerComponent } from './dashboard/dashboard.container';
 import {
   HeroDetailContainerComponent,
 } from './hero-detail/hero-detail.container';
-import { HeroesComponent } from './heroes/heroes.component';
 import { HeroesContainerComponent } from './heroes/heroes.container';
 
 const routes: Routes = [

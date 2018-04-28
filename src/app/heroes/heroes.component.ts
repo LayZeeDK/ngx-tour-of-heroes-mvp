@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-
-import { Hero } from '../hero';
-import { HeroService } from '../hero.service';
-import { Input } from '@angular/core';
-import { EventEmitter } from '@angular/core';
-import { Output } from '@angular/core';
-import { HeroesPresenter } from './heroes.presenter';
-import { OnDestroy } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+
+import { Hero } from '../hero';
+import { HeroesPresenter } from './heroes.presenter';
 
 @Component({
   selector: 'app-heroes-ui',
