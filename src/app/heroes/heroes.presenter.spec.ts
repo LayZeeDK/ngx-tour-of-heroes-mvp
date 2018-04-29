@@ -7,7 +7,7 @@ describe('HeroesPresenter', () => {
     presenter = new HeroesPresenter();
   });
 
-  describe('it emits a hero name', () => {
+  describe('emits a hero name', () => {
     let addSpy: jasmine.Spy;
 
     beforeEach(() => {
