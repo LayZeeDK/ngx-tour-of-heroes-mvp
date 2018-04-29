@@ -1,6 +1,6 @@
 {
   "name": "ngx-tour-of-heroes-mvp",
-  "description": "Tour of Heroes using the Model-View-Presenter pattern.",
+  "description": "Tour of Heroes Angular app using the Model-View-Presenter pattern.",
   "version": "6.0.0-rc.6",
   "private": true,
   "license": "MIT",
