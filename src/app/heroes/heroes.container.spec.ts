@@ -13,7 +13,6 @@ import { HeroesContainerComponent } from './heroes.container';
 
 describe('HeroesContainerComponent', () => {
   let container: HeroesContainerComponent;
-  let deleteHeroSpy: jasmine.Spy;
   let heroesSpy: jasmine.Spy;
   let heroServiceStub: Partial<HeroService>;
 
@@ -33,7 +32,7 @@ describe('HeroesContainerComponent', () => {
       }
     };
     spyOn(heroServiceStub, 'addHero').and.callThrough();
-    deleteHeroSpy = spyOn(heroServiceStub, 'deleteHero').and.callThrough();
+    spyOn(heroServiceStub, 'deleteHero').and.callThrough();
     spyOn(heroServiceStub, 'getHeroes').and.callThrough();
     container = new HeroesContainerComponent(
       heroServiceStub as HeroService);
