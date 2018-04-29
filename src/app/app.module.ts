@@ -16,6 +16,7 @@ import { HeroSearchComponent } from './hero-search/hero-search.component';
 import {
   HeroSearchContainerComponent,
 } from './hero-search/hero-search.container';
+import { HeroSearchDirective } from './hero-search/hero-search.directive';
 import { HeroesComponent } from './heroes/heroes.component';
 import { HeroesContainerComponent } from './heroes/heroes.container';
 import { InMemoryDataService } from './in-memory-data.service';
@@ -48,6 +49,7 @@ import { MessagesContainerComponent } from './messages/messages.container';
     MessagesContainerComponent,
     HeroSearchComponent,
     HeroSearchContainerComponent,
+    HeroSearchDirective,
   ],
   bootstrap: [ AppComponent ],
 })
