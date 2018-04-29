@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, Self } from '@angular/core';
 
 import { MessagesPresenter } from './messages.presenter';
 
@@ -6,7 +6,7 @@ import { MessagesPresenter } from './messages.presenter';
   selector: 'app-messages-ui',
   templateUrl: './messages.component.html',
   styleUrls: ['./messages.component.css'],
-  providers: [MessagesPresenter],
+  viewProviders: [MessagesPresenter],
 })
 export class MessagesComponent {
   get messages(): string[] {
@@ -22,5 +22,5 @@ export class MessagesComponent {
     return this.presenter.hasMessages;
   }
 
-  constructor(private presenter: MessagesPresenter) {}
+  constructor(@Self() private presenter: MessagesPresenter) {}
 }

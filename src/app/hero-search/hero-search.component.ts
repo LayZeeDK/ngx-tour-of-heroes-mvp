@@ -5,6 +5,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  Self,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -16,7 +17,7 @@ import { HeroSearchPresenter } from './hero-search.presenter';
   selector: 'app-hero-search-ui',
   templateUrl: './hero-search.component.html',
   styleUrls: ['./hero-search.component.css'],
-  providers: [HeroSearchPresenter],
+  viewProviders: [HeroSearchPresenter],
 })
 export class HeroSearchComponent implements OnDestroy, OnInit {
   @Input() heroes: Hero[];
@@ -24,7 +25,7 @@ export class HeroSearchComponent implements OnDestroy, OnInit {
   @Output() search: EventEmitter<string> = new EventEmitter();
   private destroy: Subject<void> = new Subject();
 
-  constructor(private presenter: HeroSearchPresenter) {}
+  constructor(@Self() private presenter: HeroSearchPresenter) {}
 
   ngOnInit(): void {
     this.presenter.searchTerms$.pipe(

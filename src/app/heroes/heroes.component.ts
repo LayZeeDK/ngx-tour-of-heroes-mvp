@@ -5,6 +5,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  Self,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -16,7 +17,7 @@ import { HeroesPresenter } from './heroes.presenter';
   selector: 'app-heroes-ui',
   templateUrl: './heroes.component.html',
   styleUrls: ['./heroes.component.css'],
-  providers: [HeroesPresenter],
+  viewProviders: [HeroesPresenter],
 })
 export class HeroesComponent implements OnDestroy, OnInit {
   @Input() heroes: Hero[];
@@ -25,7 +26,7 @@ export class HeroesComponent implements OnDestroy, OnInit {
   @Output() remove: EventEmitter<Hero> = new EventEmitter();
   private destroy: Subject<void> = new Subject();
 
-  constructor(private presenter: HeroesPresenter) {}
+  constructor(@Self() private presenter: HeroesPresenter) {}
 
   ngOnInit(): void {
     this.presenter.add$.pipe(
