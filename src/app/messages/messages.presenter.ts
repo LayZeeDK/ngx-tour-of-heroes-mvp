@@ -1,6 +1,12 @@
+import { MessagesComponent } from './messages.component';
+
 export class MessagesPresenter {
+  private component: MessagesComponent;
   get hasMessages(): boolean {
-    return this.messages.length > 0;
+    return this.component.messages.length > 0;
   }
-  messages: string[] = [];
+
+  onInitialize(component: MessagesComponent): void {
+    this.component = component;
+  }
 }

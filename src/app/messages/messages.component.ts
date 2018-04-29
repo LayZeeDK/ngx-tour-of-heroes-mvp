@@ -9,12 +9,7 @@ import { MessagesPresenter } from './messages.presenter';
   providers: [MessagesPresenter],
 })
 export class MessagesComponent {
-  get messages(): string[] {
-    return this.presenter.messages;
-  }
-  @Input() set messages(value: string[]) {
-    this.presenter.messages = value;
-  }
+  @Input() messages: string[];
   @Input() title: string;
   @Output() clear: EventEmitter<void> = new EventEmitter();
 
@@ -22,5 +17,7 @@ export class MessagesComponent {
     return this.presenter.hasMessages;
   }
 
-  constructor(private presenter: MessagesPresenter) {}
+  constructor(private presenter: MessagesPresenter) {
+    presenter.onInitialize(this);
+  }
 }
