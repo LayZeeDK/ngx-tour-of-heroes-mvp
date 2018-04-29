@@ -8,4 +8,8 @@
   </a>
 </div>
 
-<app-hero-search></app-hero-search>
+<!-- <app-hero-search></app-hero-search> -->
+<app-hero-search-ui #provider="heroSearchProvider"
+  [heroes]="provider.heroes$ | async"
+  title="Hero Search"
+  (search)="provider.search($event)"></app-hero-search-ui>
