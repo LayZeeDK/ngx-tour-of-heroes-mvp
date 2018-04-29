@@ -1,7 +1,20 @@
 {
-  "name": "toh",
-  "version": "0.0.0",
+  "name": "ngx-tour-of-heroes-mvp",
+  "description": "Tour of Heroes using the Model-View-Presenter pattern.",
+  "version": "6.0.0-rc.6",
+  "private": true,
   "license": "MIT",
+  "author": {
+    "name": "Lars Gyrup Brink Nielsen",
+    "email": "larsbrinknielsen@gmail.com",
+    "url": "https://github.com/LayZeeDK"
+  },
+  "homepage": "https://github.com/LayZeeDK/ngx-tour-of-heroes-mvp",
+  "bugs": "https://github.com/LayZeeDK/ngx-tour-of-heroes-mvp/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LayZeeDK/ngx-tour-of-heroes-mvp.git"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve --configuration=hmr",
@@ -10,7 +23,6 @@
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^6.0.0-rc.6",
     "@angular/common": "^6.0.0-rc.6",
