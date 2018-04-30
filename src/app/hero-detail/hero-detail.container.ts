@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { filter, switchMap } from 'rxjs/operators';
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
@@ -12,8 +12,9 @@ import { HeroService } from '../hero.service';
   templateUrl: './hero-detail.container.html',
 })
 export class HeroDetailContainerComponent {
-  hero$: Observable<Hero> = this.route.params.pipe(
-    switchMap(params => this.heroService.getHero(+params.id)),
+  hero$: Observable<Hero> = this.route.paramMap.pipe(
+    filter(params => params.has('id')),
+    switchMap(params => this.heroService.getHero(+params.get('id'))),
   );
 
   constructor(
