@@ -16,6 +16,15 @@ import { HeroService } from '../hero.service';
 import { HeroDetailContainerComponent } from './hero-detail.container';
 
 describe('HeroDetailContainerComponent', () => {
+  const blackWidow: Hero = femaleMarvelHeroes
+    .find(x => x.name === 'Black Widow');
+  let container: HeroDetailContainerComponent;
+  let heroServiceStub: Partial<HeroService>;
+  let locationStub: Partial<Location>;
+  let routeParameters: Subject<Params>;
+  let routeParametersSubscriptionCount: number;
+  let routeFake: Partial<ActivatedRoute>;
+
   function emitRouteParameters(parameters: { [key: string]: string }): void {
     routeParameters.next({
       get(name: string): string {
@@ -77,15 +86,6 @@ describe('HeroDetailContainerComponent', () => {
   afterEach(() => {
     routeParameters.complete();
   });
-
-  const blackWidow: Hero = femaleMarvelHeroes
-    .find(x => x.name === 'Black Widow');
-  let container: HeroDetailContainerComponent;
-  let heroServiceStub: Partial<HeroService>;
-  let locationStub: Partial<Location>;
-  let routeParameters: Subject<Params>;
-  let routeParametersSubscriptionCount: number;
-  let routeFake: Partial<ActivatedRoute>;
 
   it('navigates to the previous page', () => {
     container.goBack();
