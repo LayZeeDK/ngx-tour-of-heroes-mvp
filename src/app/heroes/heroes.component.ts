@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -17,6 +18,7 @@ import { HeroesPresenter } from './heroes.presenter';
   selector: 'app-heroes-ui',
   templateUrl: './heroes.component.html',
   styleUrls: ['./heroes.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [HeroesPresenter],
 })
 export class HeroesComponent implements OnDestroy, OnInit {

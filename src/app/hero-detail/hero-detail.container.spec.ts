@@ -16,21 +16,23 @@ import { HeroService } from '../hero.service';
 import { HeroDetailContainerComponent } from './hero-detail.container';
 
 describe('HeroDetailContainerComponent', () => {
+  function emitRouteParameters(parameters: { [key: string]: string }): void {
+    routeParameters.next({
+      get(name: string): string {
+        return parameters[name];
+      },
+      has(name: string): boolean {
+        return Object.keys(parameters).includes(name);
+      },
+    });
+  }
+
   function isHero(x: any): x is Hero {
     return x != null
       && typeof x === 'object'
       && typeof x.id === 'number'
       && typeof x.name === 'string';
   }
-
-  const blackWidow: Hero = femaleMarvelHeroes
-    .find(x => x.name === 'Black Widow');
-  let container: HeroDetailContainerComponent;
-  let heroServiceStub: Partial<HeroService>;
-  let locationStub: Partial<Location>;
-  let routeParameters: Subject<Params>;
-  let routeParametersSubscriptionCount: number;
-  let routeFake: Partial<ActivatedRoute>;
 
   beforeEach(() => {
     routeParameters = new Subject();
@@ -47,10 +49,10 @@ describe('HeroDetailContainerComponent', () => {
         };
       });
     routeFake = {
-      params: routeParameters$.pipe(
+      paramMap: routeParameters$.pipe(
         observeOn(asyncScheduler)
       ),
-    };
+    } as Partial<ActivatedRoute>;
     heroServiceStub = {
       getHero(id: number): Observable<Hero> {
         return observableOf(blackWidow, asyncScheduler);
@@ -76,6 +78,15 @@ describe('HeroDetailContainerComponent', () => {
     routeParameters.complete();
   });
 
+  const blackWidow: Hero = femaleMarvelHeroes
+    .find(x => x.name === 'Black Widow');
+  let container: HeroDetailContainerComponent;
+  let heroServiceStub: Partial<HeroService>;
+  let locationStub: Partial<Location>;
+  let routeParameters: Subject<Params>;
+  let routeParametersSubscriptionCount: number;
+  let routeFake: Partial<ActivatedRoute>;
+
   it('navigates to the previous page', () => {
     container.goBack();
 
@@ -95,7 +106,7 @@ describe('HeroDetailContainerComponent', () => {
         take(1),
       ).toPromise();
 
-      routeParameters.next({ id: '1' });
+      emitRouteParameters({ id: '1' });
 
       const hero: Hero = await emitHero;
       expect(isHero(hero)).toBe(true, 'it must be a hero');
@@ -106,7 +117,7 @@ describe('HeroDetailContainerComponent', () => {
 
       container.hero$.subscribe();
       expect(routeParametersSubscriptionCount).toBe(1);
-      routeParameters.next({ id: '1' });
+      emitRouteParameters({ id: '1' });
 
       expect(routeParametersSubscriptionCount).toBe(1);
     });

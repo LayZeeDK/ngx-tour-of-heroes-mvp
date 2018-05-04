@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -17,6 +18,7 @@ import { HeroSearchPresenter } from './hero-search.presenter';
   selector: 'app-hero-search-ui',
   templateUrl: './hero-search.component.html',
   styleUrls: ['./hero-search.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [HeroSearchPresenter],
 })
 export class HeroSearchComponent implements OnDestroy, OnInit {

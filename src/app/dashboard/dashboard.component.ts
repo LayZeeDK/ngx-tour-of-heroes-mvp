@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 import { Hero } from '../hero';
 
@@ -6,6 +6,7 @@ import { Hero } from '../hero';
   selector: 'app-dashboard-ui',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
   @Input() heroes: Hero[];

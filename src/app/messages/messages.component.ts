@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, Output, Self } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  Self,
+} from '@angular/core';
 
 import { MessagesPresenter } from './messages.presenter';
 
@@ -6,6 +13,7 @@ import { MessagesPresenter } from './messages.presenter';
   selector: 'app-messages-ui',
   templateUrl: './messages.component.html',
   styleUrls: ['./messages.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [MessagesPresenter],
 })
 export class MessagesComponent {
