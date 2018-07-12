@@ -13,7 +13,7 @@ import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 import { HeroSearchContainerComponent } from './hero-search.container';
 
-describe('HeroSearchContainerComponent', () => {
+describe(HeroSearchContainerComponent.name, () => {
   let container: HeroSearchContainerComponent;
   let heroesSpy: jasmine.Spy;
   let heroesSubscription: Subscription;

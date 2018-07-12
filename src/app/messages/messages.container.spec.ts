@@ -1,7 +1,7 @@
 import { MessageService } from '../message.service';
 import { MessagesContainerComponent } from './messages.container';
 
-describe('MessagesContainerComponent', () => {
+describe(MessagesContainerComponent.name, () => {
   let container: MessagesContainerComponent;
   let service: MessageService;
 

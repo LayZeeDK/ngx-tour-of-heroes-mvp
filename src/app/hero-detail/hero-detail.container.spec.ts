@@ -15,7 +15,7 @@ import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 import { HeroDetailContainerComponent } from './hero-detail.container';
 
-describe('HeroDetailContainerComponent', () => {
+describe(HeroDetailContainerComponent.name, () => {
   const blackWidow: Hero = femaleMarvelHeroes
     .find(x => x.name === 'Black Widow');
   let container: HeroDetailContainerComponent;
