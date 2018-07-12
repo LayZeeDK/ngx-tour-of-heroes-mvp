@@ -1,6 +1,6 @@
 import { HeroesPresenter } from './heroes.presenter';
 
-describe('HeroesPresenter', () => {
+describe(HeroesPresenter.name, () => {
   let presenter: HeroesPresenter;
 
   beforeEach(() => {
