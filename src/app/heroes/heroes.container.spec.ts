@@ -41,16 +41,11 @@ describe(HeroesContainerComponent.name, () => {
   });
 
   describe('emits all heroes', () => {
-    it('immediately an empty array', () => {
-      expect(heroesSpy).toHaveBeenCalledTimes(1);
-      expect(heroesSpy).toHaveBeenCalledWith([]);
-    });
-
-    it('then all heroes', fakeAsync(() => {
+    it('all heroes are emitted after the init moment', fakeAsync(() => {
       container.ngOnInit();
       tick();
 
-      expect(heroesSpy).toHaveBeenCalledTimes(2);
+      expect(heroesSpy).toHaveBeenCalledTimes(1);
       expect(heroesSpy).toHaveBeenCalledWith(femaleMarvelHeroes);
     }));
 
@@ -78,10 +73,10 @@ describe(HeroesContainerComponent.name, () => {
 
       container.add(wonderWoman);
 
-      expect(heroesSpy).toHaveBeenCalledTimes(2);
+      expect(heroesSpy).toHaveBeenCalledTimes(1);
       tick();
 
-      expect(heroesSpy).toHaveBeenCalledTimes(3);
+      expect(heroesSpy).toHaveBeenCalledTimes(2);
       expect(heroesSpy).toHaveBeenCalledWith([
         ...femaleMarvelHeroes,
         { id: 42, name: wonderWoman },
@@ -104,36 +99,39 @@ describe(HeroesContainerComponent.name, () => {
       container.ngOnInit();
       tick();
 
-      expect(heroesSpy).toHaveBeenCalledTimes(2);
+      expect(heroesSpy).toHaveBeenCalledTimes(1);
       container.delete(elektra);
 
-      expect(heroesSpy).toHaveBeenCalledTimes(3);
+      expect(heroesSpy).toHaveBeenCalledTimes(2);
       expect(heroesSpy).toHaveBeenCalledWith(
         femaleMarvelHeroes.filter(x => x.id !== elektra.id));
       tick();
     }));
 
     it('but emits the heroes including the specified one when server fails', fakeAsync(() => {
+      function compareIdAscending(a: Hero, b: Hero): number {
+        return a.id < b.id
+          ? -1
+          : a.id > b.id
+          ? 1
+          : 0;
+      }
+
       const storm = femaleMarvelHeroes.find(x => x.name === 'Storm');
       heroServiceStub.deleteHero = (): Observable<Hero> =>
         throwError('timeout', asyncScheduler);
       container.ngOnInit();
       tick();
 
-      expect(heroesSpy).toHaveBeenCalledTimes(2);
+      expect(heroesSpy).toHaveBeenCalledTimes(1);
       container.delete(storm);
 
-      expect(heroesSpy).toHaveBeenCalledTimes(3);
+      expect(heroesSpy).toHaveBeenCalledTimes(2);
       tick();
 
-      expect(heroesSpy).toHaveBeenCalledTimes(4);
+      expect(heroesSpy).toHaveBeenCalledTimes(3);
       const emittedHeroes: Hero[] = heroesSpy.calls.mostRecent().args[0];
-      emittedHeroes.sort((a, b): number =>
-        a.id < b.id
-        ? -1
-        : a.id > b.id
-        ? 1
-        : 0);
+      emittedHeroes.sort(compareIdAscending);
       expect(emittedHeroes).toEqual(femaleMarvelHeroes);
     }));
   });

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { skip } from 'rxjs/operators';
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
@@ -11,7 +12,9 @@ import { HeroService } from '../hero.service';
 })
 export class HeroesContainerComponent implements OnInit {
   private heroes: BehaviorSubject<Hero[]> = new BehaviorSubject([]);
-  heroes$: Observable<Hero[]> = this.heroes.asObservable();
+  heroes$: Observable<Hero[]> = this.heroes.asObservable().pipe(
+    skip(1),
+  );
 
   constructor(private heroService: HeroService) {}
 
