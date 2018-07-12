@@ -1,6 +1,6 @@
 import { MessagesPresenter } from './messages.presenter';
 
-describe('MessagesPresenter', () => {
+describe(MessagesPresenter.name, () => {
   let presenter: MessagesPresenter;
 
   beforeEach(() => {

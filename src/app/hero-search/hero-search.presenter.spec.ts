@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 
 import { HeroSearchPresenter } from './hero-search.presenter';
 
-describe('HeroSearchPresenter', () => {
+describe(HeroSearchPresenter.name, () => {
   let presenter: HeroSearchPresenter;
 
   beforeEach(() => {

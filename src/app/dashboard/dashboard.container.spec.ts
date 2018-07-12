@@ -6,7 +6,7 @@ import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 import { DashboardContainerComponent } from './dashboard.container';
 
-describe('DashboardContainerComponent', () => {
+describe(DashboardContainerComponent.name, () => {
   describe('emits top heroes', () => {
     let component: DashboardContainerComponent;
     let heroServiceStub: Partial<HeroService>;
@@ -37,7 +37,7 @@ describe('DashboardContainerComponent', () => {
       expect(heroes[0]).toEqual({ id: 2, name: 'Captain Marvel' });
     });
 
-    it(`immediately delegates to ${HeroService.prototype.constructor.name}`, async () => {
+    it(`immediately delegates to ${HeroService.name}`, async () => {
       expect(heroServiceStub.getHeroes).toHaveBeenCalledTimes(1);
 
       await component.topHeroes$.toPromise();
