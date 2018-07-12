@@ -11,7 +11,7 @@ import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 import { HeroesContainerComponent } from './heroes.container';
 
-describe('HeroesContainerComponent', () => {
+describe(HeroesContainerComponent.name, () => {
   let container: HeroesContainerComponent;
   let heroesSpy: jasmine.Spy;
   let heroServiceStub: Partial<HeroService>;
