@@ -54,7 +54,7 @@ describe(HeroesContainerComponent.name, () => {
       expect(heroesSpy).toHaveBeenCalledWith(femaleMarvelHeroes);
     }));
 
-    it(`by delegating to ${HeroService.prototype.constructor.name}`, () => {
+    it(`by delegating to ${HeroService.name}`, () => {
       container.ngOnInit();
 
       expect(heroServiceStub.getHeroes).toHaveBeenCalledTimes(1);
@@ -62,7 +62,7 @@ describe(HeroesContainerComponent.name, () => {
   });
 
   describe('adds a hero', () => {
-    it(`by delegating to ${HeroService.prototype.constructor.name}`, () => {
+    it(`by delegating to ${HeroService.name}`, () => {
       const hawkeye = 'Hawkeye (Kate Bishop)';
 
       container.add(hawkeye);
@@ -90,7 +90,7 @@ describe(HeroesContainerComponent.name, () => {
   });
 
   describe('deletes a hero', () => {
-    it(`by delegating to ${HeroService.prototype.constructor.name}`, () => {
+    it(`by delegating to ${HeroService.name}`, () => {
       const gamora = femaleMarvelHeroes.find(x => x.name === 'Gamora');
 
       container.delete(gamora);
