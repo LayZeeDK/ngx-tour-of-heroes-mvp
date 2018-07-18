@@ -20,9 +20,7 @@ export class HeroesContainerComponent implements OnInit {
 
   ngOnInit(): void {
     this.heroService.getHeroes()
-      .subscribe(
-        heroes => this.heroes.next(heroes),
-        error => this.heroes.error(error));
+      .subscribe(this.heroes);
   }
 
   add(name: string): void {
