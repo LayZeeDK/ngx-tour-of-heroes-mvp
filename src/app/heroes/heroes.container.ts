@@ -53,10 +53,18 @@ export class HeroesContainerComponent {
   private addHeroes(additionalHeroes: Hero[]): void {
     this.heroes.pipe(
       first(),
-    ).subscribe(heroes => this.heroes.next([
+    ).subscribe(heroes => this.heroes.next(
+      this.appendMultipleToHeroes(additionalHeroes, heroes)));
+  }
+
+  private appendMultipleToHeroes(
+    additionalHeroes: Hero[],
+    heroes: Hero[],
+  ): Hero[] {
+    return [
       ...heroes,
-      ...additionalHeroes,
-    ]));
+      ...additionalHeroes.filter(h => !heroes.includes(h)),
+    ];
   }
 
   private appendToHeroes(hero: Hero, heroes: Hero[]): Hero[] {
