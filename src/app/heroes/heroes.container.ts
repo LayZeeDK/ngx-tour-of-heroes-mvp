@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { shareReplay } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { first, shareReplay } from 'rxjs/operators';
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
@@ -13,12 +13,11 @@ type HeroUpdate = 'add' | 'remove';
   templateUrl: './heroes.container.html',
 })
 export class HeroesContainerComponent {
-  private addHero: Subject<Hero> = new Subject();
-  private heroes: Subject<Hero[]> = new Subject();
+  // TODO: can we replace it with ReplaySubject(1)?
+  private heroes: BehaviorSubject<Hero[]> = new BehaviorSubject([]);
   private initialHeroes = this.heroService.getHeroes().pipe(
     shareReplay(1),
   );
-  private removeHero: Subject<Hero> = new Subject();
 
   heroes$: Observable<Hero[]>;
 
@@ -28,20 +27,27 @@ export class HeroesContainerComponent {
 
   add(name: string): void {
     this.heroService.addHero({ name } as Hero)
-      .subscribe(h => this.addHero.next(h));
+      .subscribe(h => this.addHero(h));
   }
 
   delete(hero: Hero): void {
-    this.removeHero.next(hero);
+    this.removeHero(hero);
     this.heroService.deleteHero(hero)
       .subscribe(
         undefined,
-        () => this.addHero.next({ ...hero }));
+        () => this.addHero({ ...hero }));
   }
 
   private initializeHeroes(): Observable<Hero[]> {
-    // TOOD: create heroes observable from initialHeroes, addHero and removeHero
+    // TODO: create heroes stream from initialHeroes, addHero and removeHero
+    // TODO: only connect to initialHeroes on subscription to the merged stream
     return new Subject<Hero[]>();
+  }
+
+  private addHero(hero: Hero): void {
+    this.heroes.pipe(
+      first(),
+    ).subscribe(heroes => this.heroes.next(this.addToHeroes(hero, heroes)));
   }
 
   private addToHeroes(hero: Hero, heroes: Hero[]): Hero[] {
@@ -55,5 +61,11 @@ export class HeroesContainerComponent {
 
   private removeFromHeroes(hero: Hero, heroes: Hero[]): Hero[] {
     return heroes.filter(h => h !== hero);
+  }
+
+  private removeHero(hero: Hero): void {
+    this.heroes.pipe(
+      first(),
+    ).subscribe(heroes => this.heroes.next(this.removeFromHeroes(hero, heroes)));
   }
 }
