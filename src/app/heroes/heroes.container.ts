@@ -50,6 +50,15 @@ export class HeroesContainerComponent {
     ).subscribe(heroes => this.heroes.next(this.addToHeroes(hero, heroes)));
   }
 
+  private addHeroes(additionalHeroes: Hero[]): void {
+    this.heroes.pipe(
+      first(),
+    ).subscribe(heroes => this.heroes.next([
+      ...heroes,
+      ...additionalHeroes,
+    ]));
+  }
+
   private addToHeroes(hero: Hero, heroes: Hero[]): Hero[] {
     return heroes.includes(hero)
       ? heroes
