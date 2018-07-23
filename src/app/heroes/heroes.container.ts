@@ -31,8 +31,8 @@ export class HeroesContainerComponent {
   delete(hero: Hero): void {
     this.heroRemove.next(hero);
     this.heroService.deleteHero(hero)
-      .subscribe(
-        undefined,
-        () => this.heroAdd.next(hero));
+      .subscribe({
+        error: () => this.heroAdd.next(hero),
+      });
   }
 }
