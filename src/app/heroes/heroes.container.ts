@@ -40,6 +40,7 @@ export class HeroesContainerComponent {
 
   private initializeHeroes(): Observable<Hero[]> {
     // TODO: create heroes stream from initialHeroes, addHero and removeHero
+    // Maybe create a custom observable?
     // TODO: only connect to initialHeroes on subscription to the merged stream
     return new Subject<Hero[]>();
   }
