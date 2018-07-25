@@ -19,11 +19,35 @@ describe(HeroDetailContainerComponent.name, () => {
   const blackWidow: Hero = femaleMarvelHeroes
     .find(x => x.name === 'Black Widow');
   let container: HeroDetailContainerComponent;
-  let heroServiceStub: Partial<HeroService>;
-  let locationStub: Partial<Location>;
+  const heroServiceStub: jasmine.SpyObj<HeroService> = createHeroServiceStub();
+  const locationStub: jasmine.SpyObj<Location> = createLocationStub();
   let routeParameters: Subject<Params>;
   let routeParametersSubscriptionCount: number;
-  let routeFake: Partial<ActivatedRoute>;
+  let activatedRouteFake: Partial<ActivatedRoute>;
+
+  function createHeroServiceStub(): jasmine.SpyObj<HeroService> {
+    const stub: jasmine.SpyObj<HeroService> = jasmine.createSpyObj(
+      HeroService.name,
+      [
+        'getHero',
+        'updateHero',
+      ]);
+    resetHeroServiceStub(stub);
+
+    return stub;
+  }
+
+  function createLocationStub(): jasmine.SpyObj<Location> {
+    const stub: jasmine.SpyObj<Location> = jasmine.createSpyObj(
+      Location.name,
+      [
+        'back',
+      ]);
+
+      resetLocationStub(stub);
+
+      return stub;
+  }
 
   function emitRouteParameters(parameters: { [key: string]: string }): void {
     routeParameters.next({
@@ -39,8 +63,22 @@ describe(HeroDetailContainerComponent.name, () => {
   function isHero(x: any): x is Hero {
     return x != null
       && typeof x === 'object'
+      && !Array.isArray(x)
       && typeof x.id === 'number'
       && typeof x.name === 'string';
+  }
+
+  function resetHeroServiceStub(stub: jasmine.SpyObj<HeroService>): void {
+    stub.getHero
+      .and.returnValue(observableOf(blackWidow, asyncScheduler))
+      .calls.reset();
+    stub.updateHero
+      .and.callFake((hero: Hero) => observableOf(hero, asyncScheduler))
+      .calls.reset();
+  }
+
+  function resetLocationStub(stub: jasmine.SpyObj<Location>): void {
+    stub.back.calls.reset();
   }
 
   beforeEach(() => {
@@ -56,35 +94,22 @@ describe(HeroDetailContainerComponent.name, () => {
           routeParametersSubscription.unsubscribe();
           routeParametersSubscriptionCount -= 1;
         };
-      });
-    routeFake = {
-      paramMap: routeParameters$.pipe(
-        observeOn(asyncScheduler)
-      ),
+      }).pipe(
+        observeOn(asyncScheduler),
+      );
+    activatedRouteFake = {
+      paramMap: routeParameters$,
     } as Partial<ActivatedRoute>;
-    heroServiceStub = {
-      getHero(id: number): Observable<Hero> {
-        return observableOf(blackWidow, asyncScheduler);
-      },
-      updateHero(hero: Hero): Observable<any> {
-        return observableOf(hero, asyncScheduler);
-      },
-    };
-    spyOn(heroServiceStub, 'getHero').and.callThrough();
-    spyOn(heroServiceStub, 'updateHero').and.callThrough();
-    locationStub = {
-      back(): void {},
-    };
-    spyOn(locationStub, 'back').and.callThrough();
     container = new HeroDetailContainerComponent(
-      routeFake as ActivatedRoute,
+      activatedRouteFake as ActivatedRoute,
       heroServiceStub as HeroService,
-      locationStub as Location,
-    );
+      locationStub as Location);
   });
 
   afterEach(() => {
     routeParameters.complete();
+    resetHeroServiceStub(heroServiceStub);
+    resetLocationStub(locationStub);
   });
 
   it('navigates to the previous page', () => {
@@ -122,5 +147,4 @@ describe(HeroDetailContainerComponent.name, () => {
       expect(routeParametersSubscriptionCount).toBe(1);
     });
   });
-
 });
