@@ -1,5 +1,4 @@
 import { asyncScheduler, of as observableOf } from 'rxjs';
-import { first } from 'rxjs/operators';
 
 import { femaleMarvelHeroes } from '../../test/female-marvel-heroes';
 import { Hero } from '../hero';
@@ -34,14 +33,6 @@ describe(DashboardContainerComponent.name, () => {
     });
     afterEach(() => {
       resetHeroServiceStub(heroServiceStub);
-    });
-
-    it('initially emits an empty array', async () => {
-      const heroes = await container.topHeroes$.pipe(
-        first(),
-      ).toPromise();
-
-      expect(heroes).toEqual([]);
     });
 
     it('emits the top 4 heroes', async () => {
