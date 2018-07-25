@@ -1,10 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
-import {
-  asyncScheduler,
-  of as observableOf,
-  Subscription,
-  throwError,
-} from 'rxjs';
+import { asyncScheduler, of as observableOf, Subject, throwError } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { femaleMarvelHeroes } from '../../test/female-marvel-heroes';
 import { Hero } from '../hero';
@@ -41,40 +37,30 @@ describe(HeroesContainerComponent.name, () => {
   }
 
   let container: HeroesContainerComponent;
-  let heroesObserver: jasmine.Spy;
-  let heroesSubscription: Subscription;
-  let heroServiceStub: jasmine.SpyObj<HeroService>;
+  const destroy: Subject<void> = new Subject();
+  const heroServiceStub: jasmine.SpyObj<HeroService> = createHeroServiceStub();
+  const observer: jasmine.Spy = jasmine.createSpy('heroes observer');
 
-  beforeAll(() => {
-    heroServiceStub = createHeroServiceStub();
-  });
-
-  beforeEach(() => {
+  beforeEach(fakeAsync(() => {
     container = new HeroesContainerComponent(heroServiceStub as HeroService);
-    heroesObserver = jasmine.createSpy('heroes observer');
-    heroesSubscription = undefined;
-  });
+    container.heroes$.pipe(takeUntil(destroy)).subscribe(observer);
+    tick();
+  }));
   afterEach(() => {
-    if (heroesSubscription) {
-      heroesSubscription.unsubscribe();
-    }
-  });
-  afterEach(() => {
+    destroy.next();
+    observer.calls.reset();
     resetHeroServiceStub(heroServiceStub);
+  });
+  afterAll(() => {
+    destroy.complete();
   });
 
   describe('emits all heroes', () => {
     it('all heroes are emitted after subscribing', fakeAsync(() => {
-      heroesSubscription = container.heroes$.subscribe(heroesObserver);
-      tick();
-
-      expect(heroesObserver).toHaveBeenCalledTimes(1);
-      expect(heroesObserver).toHaveBeenCalledWith(femaleMarvelHeroes);
+      expect(observer).toHaveBeenCalledWith(femaleMarvelHeroes);
     }));
 
     it(`by delegating to ${HeroService.name}`, () => {
-      heroesSubscription = container.heroes$.subscribe(heroesObserver);
-
       expect(heroServiceStub.getHeroes).toHaveBeenCalledTimes(1);
     });
   });
@@ -90,17 +76,12 @@ describe(HeroesContainerComponent.name, () => {
     });
 
     it('and emits all heroes when server responds', fakeAsync(() => {
-      heroesSubscription = container.heroes$.subscribe(heroesObserver);
-      tick();
-
-      expect(heroesObserver).toHaveBeenCalledTimes(1);
       const wonderWoman = 'Wonder Woman';
 
       container.add(wonderWoman);
       tick();
 
-      expect(heroesObserver).toHaveBeenCalledTimes(2);
-      expect(heroesObserver).toHaveBeenCalledWith([
+      expect(observer).toHaveBeenCalledWith([
         ...femaleMarvelHeroes,
         { id: 42, name: wonderWoman },
       ]);
@@ -109,8 +90,7 @@ describe(HeroesContainerComponent.name, () => {
 
   describe('deletes a hero', () => {
     it(`by delegating to ${HeroService.name}`, () => {
-      heroesSubscription = container.heroes$.subscribe(heroesObserver);
-      const gamora = femaleMarvelHeroes.find(x => x.name === 'Gamora');
+      const gamora: Hero = femaleMarvelHeroes.find(x => x.name === 'Gamora');
 
       container.delete(gamora);
 
@@ -119,17 +99,13 @@ describe(HeroesContainerComponent.name, () => {
     });
 
     it('and emits heroes except the specified one immediately', fakeAsync(() => {
-      heroesSubscription = container.heroes$.subscribe(heroesObserver);
-      const elektra = femaleMarvelHeroes.find(x => x.name === 'Elektra');
-      tick();
+      const elektra: Hero = femaleMarvelHeroes.find(x => x.name === 'Elektra');
 
-      expect(heroesObserver).toHaveBeenCalledTimes(1);
       container.delete(elektra);
-
-      expect(heroesObserver).toHaveBeenCalledTimes(2);
-      expect(heroesObserver).toHaveBeenCalledWith(
-        femaleMarvelHeroes.filter(x => x.id !== elektra.id));
       tick();
+
+      expect(observer).toHaveBeenCalledWith(
+        femaleMarvelHeroes.filter(x => x.id !== elektra.id));
     }));
 
     it('but emits the heroes including the specified one when server fails', fakeAsync(() => {
@@ -141,20 +117,14 @@ describe(HeroesContainerComponent.name, () => {
           : 0;
       }
 
-      heroesSubscription = container.heroes$.subscribe(heroesObserver);
-      tick();
-      const storm = femaleMarvelHeroes.find(x => x.name === 'Storm');
       heroServiceStub.deleteHero.and.returnValue(
-        throwError('timeout', asyncScheduler));
+        throwError(new Error('timeout'), asyncScheduler));
+      const storm: Hero = femaleMarvelHeroes.find(x => x.name === 'Storm');
 
-      expect(heroesObserver).toHaveBeenCalledTimes(1);
       container.delete(storm);
-
-      expect(heroesObserver).toHaveBeenCalledTimes(2);
       tick();
 
-      expect(heroesObserver).toHaveBeenCalledTimes(3);
-      const emittedHeroes: Hero[] = heroesObserver.calls.mostRecent().args[0];
+      const emittedHeroes: Hero[]  = observer.calls.mostRecent().args[0];
       emittedHeroes.sort(compareIdAscending);
       expect(emittedHeroes).toEqual(femaleMarvelHeroes);
     }));
