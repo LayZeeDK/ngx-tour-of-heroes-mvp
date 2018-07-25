@@ -1,7 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import {
   asyncScheduler,
-  Observable,
   of as observableOf,
   Subscription,
   throwError,
@@ -13,29 +12,44 @@ import { HeroService } from '../hero.service';
 import { HeroesContainerComponent } from './heroes.container';
 
 describe(HeroesContainerComponent.name, () => {
+  function createHeroServiceStub(): jasmine.SpyObj<HeroService> {
+    const stub: jasmine.SpyObj<HeroService> = jasmine.createSpyObj(
+      HeroService.name,
+      [
+        'addHero',
+        'deleteHero',
+        'getHeroes',
+      ]);
+    resetHeroServiceStub(stub);
+
+    return stub;
+  }
+
+  function resetHeroServiceStub(stub: jasmine.SpyObj<HeroService>): void {
+    stub.addHero
+      .and.callFake(({ name }: Partial<Hero>) => observableOf({
+        id: 42,
+        name,
+      }, asyncScheduler))
+      .calls.reset();
+    stub.deleteHero
+      .and.callFake((hero: Hero) => observableOf(hero, asyncScheduler))
+      .calls.reset();
+    stub.getHeroes
+      .and.returnValue(observableOf(femaleMarvelHeroes, asyncScheduler))
+      .calls.reset();
+  }
+
   let container: HeroesContainerComponent;
   let heroesObserver: jasmine.Spy;
   let heroesSubscription: Subscription;
-  let heroServiceStub: Partial<HeroService>;
+  let heroServiceStub: jasmine.SpyObj<HeroService>;
+
+  beforeAll(() => {
+    heroServiceStub = createHeroServiceStub();
+  });
 
   beforeEach(() => {
-    heroServiceStub = {
-      addHero({ name }: Partial<Hero>): Observable<Hero> {
-        return observableOf({
-          id: 42,
-          name,
-        }, asyncScheduler);
-      },
-      deleteHero(hero: Hero): Observable<Hero> {
-        return observableOf(hero, asyncScheduler);
-      },
-      getHeroes(): Observable<Hero[]> {
-        return observableOf(femaleMarvelHeroes, asyncScheduler);
-      }
-    };
-    spyOn(heroServiceStub, 'addHero').and.callThrough();
-    spyOn(heroServiceStub, 'deleteHero').and.callThrough();
-    spyOn(heroServiceStub, 'getHeroes').and.callThrough();
     container = new HeroesContainerComponent(heroServiceStub as HeroService);
     heroesObserver = jasmine.createSpy('heroes observer');
     heroesSubscription = undefined;
@@ -44,6 +58,9 @@ describe(HeroesContainerComponent.name, () => {
     if (heroesSubscription) {
       heroesSubscription.unsubscribe();
     }
+  });
+  afterEach(() => {
+    resetHeroServiceStub(heroServiceStub);
   });
 
   describe('emits all heroes', () => {
@@ -74,12 +91,12 @@ describe(HeroesContainerComponent.name, () => {
 
     it('and emits all heroes when server responds', fakeAsync(() => {
       heroesSubscription = container.heroes$.subscribe(heroesObserver);
-      const wonderWoman = 'Wonder Woman';
       tick();
 
-      container.add(wonderWoman);
-
       expect(heroesObserver).toHaveBeenCalledTimes(1);
+      const wonderWoman = 'Wonder Woman';
+
+      container.add(wonderWoman);
       tick();
 
       expect(heroesObserver).toHaveBeenCalledTimes(2);
@@ -127,8 +144,8 @@ describe(HeroesContainerComponent.name, () => {
       heroesSubscription = container.heroes$.subscribe(heroesObserver);
       tick();
       const storm = femaleMarvelHeroes.find(x => x.name === 'Storm');
-      heroServiceStub.deleteHero = (): Observable<Hero> =>
-        throwError('timeout', asyncScheduler);
+      heroServiceStub.deleteHero.and.returnValue(
+        throwError('timeout', asyncScheduler));
 
       expect(heroesObserver).toHaveBeenCalledTimes(1);
       container.delete(storm);
