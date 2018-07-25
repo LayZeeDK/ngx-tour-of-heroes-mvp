@@ -13,13 +13,10 @@ import { HeroService } from '../hero.service';
 import { HeroesContainerComponent } from './heroes.container';
 
 describe(HeroesContainerComponent.name, () => {
+  let container: HeroesContainerComponent;
   let heroesObserver: jasmine.Spy;
   let heroesSubscription: Subscription;
   let heroServiceStub: Partial<HeroService>;
-
-  function createContainer(): HeroesContainerComponent {
-    return new HeroesContainerComponent(heroServiceStub as HeroService);
-  }
 
   beforeEach(() => {
     heroServiceStub = {
@@ -39,6 +36,7 @@ describe(HeroesContainerComponent.name, () => {
     spyOn(heroServiceStub, 'addHero').and.callThrough();
     spyOn(heroServiceStub, 'deleteHero').and.callThrough();
     spyOn(heroServiceStub, 'getHeroes').and.callThrough();
+    container = new HeroesContainerComponent(heroServiceStub as HeroService);
     heroesObserver = jasmine.createSpy('heroes observer');
     heroesSubscription = undefined;
   });
@@ -50,8 +48,6 @@ describe(HeroesContainerComponent.name, () => {
 
   describe('emits all heroes', () => {
     it('all heroes are emitted after subscribing', fakeAsync(() => {
-      const container: HeroesContainerComponent = createContainer();
-
       heroesSubscription = container.heroes$.subscribe(heroesObserver);
       tick();
 
@@ -60,8 +56,6 @@ describe(HeroesContainerComponent.name, () => {
     }));
 
     it(`by delegating to ${HeroService.name}`, () => {
-      const container: HeroesContainerComponent = createContainer();
-
       heroesSubscription = container.heroes$.subscribe(heroesObserver);
 
       expect(heroServiceStub.getHeroes).toHaveBeenCalledTimes(1);
@@ -70,7 +64,6 @@ describe(HeroesContainerComponent.name, () => {
 
   describe('adds a hero', () => {
     it(`by delegating to ${HeroService.name}`, () => {
-      const container: HeroesContainerComponent = createContainer();
       const hawkeye = 'Hawkeye (Kate Bishop)';
 
       container.add(hawkeye);
@@ -80,7 +73,6 @@ describe(HeroesContainerComponent.name, () => {
     });
 
     it('and emits all heroes when server responds', fakeAsync(() => {
-      const container: HeroesContainerComponent = createContainer();
       heroesSubscription = container.heroes$.subscribe(heroesObserver);
       const wonderWoman = 'Wonder Woman';
       tick();
@@ -100,7 +92,6 @@ describe(HeroesContainerComponent.name, () => {
 
   describe('deletes a hero', () => {
     it(`by delegating to ${HeroService.name}`, () => {
-      const container: HeroesContainerComponent = createContainer();
       heroesSubscription = container.heroes$.subscribe(heroesObserver);
       const gamora = femaleMarvelHeroes.find(x => x.name === 'Gamora');
 
@@ -111,7 +102,6 @@ describe(HeroesContainerComponent.name, () => {
     });
 
     it('and emits heroes except the specified one immediately', fakeAsync(() => {
-      const container: HeroesContainerComponent = createContainer();
       heroesSubscription = container.heroes$.subscribe(heroesObserver);
       const elektra = femaleMarvelHeroes.find(x => x.name === 'Elektra');
       tick();
@@ -134,7 +124,6 @@ describe(HeroesContainerComponent.name, () => {
           : 0;
       }
 
-      const container: HeroesContainerComponent = createContainer();
       heroesSubscription = container.heroes$.subscribe(heroesObserver);
       tick();
       const storm = femaleMarvelHeroes.find(x => x.name === 'Storm');
