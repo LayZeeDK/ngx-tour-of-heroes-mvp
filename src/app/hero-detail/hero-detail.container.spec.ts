@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import {
   asyncScheduler,
   Observable,
@@ -21,7 +21,7 @@ describe(HeroDetailContainerComponent.name, () => {
   let container: HeroDetailContainerComponent;
   const heroServiceStub: jasmine.SpyObj<HeroService> = createHeroServiceStub();
   const locationStub: jasmine.SpyObj<Location> = createLocationStub();
-  let routeParameters: Subject<Params>;
+  let routeParameters: Subject<ParamMap>;
   let routeParametersSubscriptionCount: number;
   let activatedRouteFake: Partial<ActivatedRoute>;
 
@@ -51,8 +51,16 @@ describe(HeroDetailContainerComponent.name, () => {
 
   function emitRouteParameters(parameters: { [key: string]: string }): void {
     routeParameters.next({
-      get(name: string): string {
-        return parameters[name];
+      get keys(): string[] {
+        return Object.keys(parameters);
+      },
+      get(name: string): string | null {
+        return parameters[name] || null;
+      },
+      getAll(name: string): string[] {
+        return this.has(name)
+          ? [parameters[name]]
+          : [];
       },
       has(name: string): boolean {
         return Object.keys(parameters).includes(name);
@@ -84,8 +92,8 @@ describe(HeroDetailContainerComponent.name, () => {
   beforeEach(() => {
     routeParameters = new Subject();
     routeParametersSubscriptionCount = 0;
-    const routeParameters$: Observable<Params> = Observable.create(
-      (observer: Observer<Params>): () => void => {
+    const routeParameters$: Observable<ParamMap> = Observable.create(
+      (observer: Observer<ParamMap>): () => void => {
         const routeParametersSubscription: Subscription = routeParameters
           .subscribe(observer);
         routeParametersSubscriptionCount += 1;
