@@ -4,9 +4,10 @@ import {
   BehaviorSubject,
   Observable,
   Observer,
+  Subject,
   Subscription,
 } from 'rxjs';
-import { observeOn } from 'rxjs/operators';
+import { observeOn, takeUntil } from 'rxjs/operators';
 
 import { femaleMarvelHeroes } from '../../test/female-marvel-heroes';
 import { Hero } from '../hero';
@@ -15,8 +16,8 @@ import { HeroSearchContainerComponent } from './hero-search.container';
 
 describe(HeroSearchContainerComponent.name, () => {
   let container: HeroSearchContainerComponent;
-  let heroesSpy: jasmine.Spy;
-  let heroesSubscription: Subscription;
+  const destroy: Subject<void> = new Subject();
+  const heroesObserver: jasmine.Spy = jasmine.createSpy('heroes observer');
   const heroSearch: BehaviorSubject<Hero[]> =
     new BehaviorSubject(femaleMarvelHeroes);
   let heroSearchSubscriptionCount: number;
@@ -45,15 +46,18 @@ describe(HeroSearchContainerComponent.name, () => {
     spyOn(heroServiceStub, 'searchHeroes').and.callThrough();
     container = new HeroSearchContainerComponent(
       heroServiceStub as HeroService);
-  });
-
-  beforeEach(() => {
-    heroesSpy = jasmine.createSpy('heroesSpy');
-    heroesSubscription = container.heroes$.subscribe(heroesSpy);
+    container.heroes$.pipe(
+      takeUntil(destroy),
+    ).subscribe(heroesObserver);
   });
 
   afterEach(() => {
-    heroesSubscription.unsubscribe();
+    destroy.next();
+    heroesObserver.calls.reset();
+  });
+
+  afterAll(() => {
+    destroy.complete();
   });
 
   describe('emits filtered heroes', () => {
@@ -63,7 +67,7 @@ describe(HeroSearchContainerComponent.name, () => {
       container.search(missMarvel);
       tick();
 
-      expect(heroesSpy).toHaveBeenCalledTimes(1);
+      expect(heroesObserver).toHaveBeenCalledTimes(1);
     }));
   });
 
