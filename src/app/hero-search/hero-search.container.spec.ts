@@ -1,13 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
-import {
-  asyncScheduler,
-  BehaviorSubject,
-  Observable,
-  Observer,
-  Subject,
-  Subscription,
-} from 'rxjs';
-import { observeOn, takeUntil } from 'rxjs/operators';
+import { asyncScheduler, BehaviorSubject, Subject } from 'rxjs';
+import { finalize, observeOn, takeUntil, tap } from 'rxjs/operators';
 
 import { femaleMarvelHeroes } from '../../test/female-marvel-heroes';
 import { Hero } from '../hero';
@@ -20,30 +13,32 @@ describe(HeroSearchContainerComponent.name, () => {
   const heroesObserver: jasmine.Spy = jasmine.createSpy('heroes observer');
   const heroSearch: BehaviorSubject<Hero[]> =
     new BehaviorSubject(femaleMarvelHeroes);
-  let heroSearchSubscriptionCount: number;
-  let heroServiceStub: Partial<HeroService>;
+  let heroSearchSubscriptionCount = 0;
+  const heroServiceStub: jasmine.SpyObj<HeroService> = createHeroServiceStub();
+
+  function createHeroServiceStub(): jasmine.SpyObj<HeroService> {
+    const stub: jasmine.SpyObj<HeroService> = jasmine.createSpyObj(
+      HeroService.name,
+      [
+        'searchHeroes',
+      ]);
+
+    resetHeroServiceStub(stub);
+
+    return stub;
+  }
+
+  function resetHeroServiceStub(stub: jasmine.SpyObj<HeroService>): void {
+    stub.searchHeroes
+      .and.returnValue(heroSearch.pipe(
+        tap(() => heroSearchSubscriptionCount += 1),
+        finalize(() => heroSearchSubscriptionCount -= 1),
+        observeOn(asyncScheduler),
+      ))
+      .calls.reset();
+  }
 
   beforeEach(() => {
-    heroSearchSubscriptionCount = 0;
-    const heroSearch$: Observable<Hero[]> = Observable.create(
-      (observer: Observer<Hero[]>): () => void => {
-        const subscription: Subscription = heroSearch
-          .subscribe(observer);
-        heroSearchSubscriptionCount += 1;
-
-        return (): void => {
-          subscription.unsubscribe();
-          heroSearchSubscriptionCount -= 1;
-        };
-      });
-    heroServiceStub = {
-      searchHeroes(): Observable<Hero[]> {
-        return heroSearch$.pipe(
-          observeOn(asyncScheduler),
-        );
-      }
-    };
-    spyOn(heroServiceStub, 'searchHeroes').and.callThrough();
     container = new HeroSearchContainerComponent(
       heroServiceStub as HeroService);
     container.heroes$.pipe(
@@ -52,8 +47,10 @@ describe(HeroSearchContainerComponent.name, () => {
   });
 
   afterEach(() => {
+    resetHeroServiceStub(heroServiceStub);
     destroy.next();
     heroesObserver.calls.reset();
+    heroSearchSubscriptionCount = 0;
   });
 
   afterAll(() => {
@@ -80,6 +77,7 @@ describe(HeroSearchContainerComponent.name, () => {
 
       expect(heroServiceStub.searchHeroes).toHaveBeenCalledTimes(1);
       expect(heroServiceStub.searchHeroes).toHaveBeenCalledWith(storm);
+
       container.search(medusa);
 
       expect(heroServiceStub.searchHeroes).toHaveBeenCalledTimes(2);
@@ -92,12 +90,15 @@ describe(HeroSearchContainerComponent.name, () => {
       const captainMarvel = 'captain marvel';
 
       expect(heroSearchSubscriptionCount).toBe(0);
+
       container.search(rogue);
 
       expect(heroSearchSubscriptionCount).toBe(1);
+
       container.search(blackWidow);
 
       expect(heroSearchSubscriptionCount).toBe(1);
+
       container.search(captainMarvel);
 
       expect(heroSearchSubscriptionCount).toBe(1);
