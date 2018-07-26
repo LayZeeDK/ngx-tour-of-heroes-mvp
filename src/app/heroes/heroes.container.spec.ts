@@ -46,11 +46,13 @@ describe(HeroesContainerComponent.name, () => {
     container.heroes$.pipe(takeUntil(destroy)).subscribe(observer);
     tick();
   }));
+
   afterEach(() => {
     destroy.next();
     observer.calls.reset();
     resetHeroServiceStub(heroServiceStub);
   });
+
   afterAll(() => {
     destroy.complete();
   });
