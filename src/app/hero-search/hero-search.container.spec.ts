@@ -44,9 +44,7 @@ describe(HeroSearchContainerComponent.name, () => {
 
   beforeEach(() => {
     container = new HeroSearchContainerComponent(heroServiceStub);
-    container.heroes$.pipe(
-      takeUntil(destroy),
-    ).subscribe(heroesObserver);
+    container.heroes$.pipe(takeUntil(destroy)).subscribe(heroesObserver);
   });
 
   afterEach(() => {
