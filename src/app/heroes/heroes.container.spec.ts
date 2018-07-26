@@ -56,26 +56,17 @@ describe(HeroesContainerComponent.name, () => {
   });
 
   describe('emits all heroes', () => {
-    it('all heroes are emitted after subscribing', fakeAsync(() => {
+    it('all heroes are emitted after subscribing', () => {
       expect(observer).toHaveBeenCalledWith(femaleMarvelHeroes);
-    }));
+    });
 
-    it(`by delegating to ${HeroService.name}`, () => {
+    it(`delegates to ${HeroService.name}`, () => {
       expect(heroServiceStub.getHeroes).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('adds a hero', () => {
-    it(`by delegating to ${HeroService.name}`, () => {
-      const hawkeye = 'Hawkeye (Kate Bishop)';
-
-      container.add(hawkeye);
-
-      expect(heroServiceStub.addHero).toHaveBeenCalledTimes(1);
-      expect(heroServiceStub.addHero).toHaveBeenCalledWith({ name: hawkeye });
-    });
-
-    it('and emits all heroes when server responds', fakeAsync(() => {
+    it('emits all heroes when server responds', fakeAsync(() => {
       const wonderWoman = 'Wonder Woman';
 
       container.add(wonderWoman);
@@ -86,10 +77,19 @@ describe(HeroesContainerComponent.name, () => {
         { id: 42, name: wonderWoman },
       ]);
     }));
+
+    it(`delegates to ${HeroService.name}`, () => {
+      const hawkeye = 'Hawkeye (Kate Bishop)';
+
+      container.add(hawkeye);
+
+      expect(heroServiceStub.addHero).toHaveBeenCalledTimes(1);
+      expect(heroServiceStub.addHero).toHaveBeenCalledWith({ name: hawkeye });
+    });
   });
 
   describe('deletes a hero', () => {
-    it(`by delegating to ${HeroService.name}`, () => {
+    it(`delegates to ${HeroService.name}`, () => {
       const gamora: Hero = femaleMarvelHeroes.find(x => x.name === 'Gamora');
 
       container.delete(gamora);
@@ -98,7 +98,7 @@ describe(HeroesContainerComponent.name, () => {
       expect(heroServiceStub.deleteHero).toHaveBeenCalledWith(gamora);
     });
 
-    it('and emits heroes except the specified one immediately', fakeAsync(() => {
+    it('emits heroes except the specified one immediately', fakeAsync(() => {
       const elektra: Hero = femaleMarvelHeroes.find(x => x.name === 'Elektra');
 
       container.delete(elektra);
