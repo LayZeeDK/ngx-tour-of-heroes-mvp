@@ -1,9 +1,9 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import {
   asyncScheduler,
+  BehaviorSubject,
   Observable,
   Observer,
-  Subject,
   Subscription,
 } from 'rxjs';
 import { observeOn } from 'rxjs/operators';
@@ -17,21 +17,21 @@ describe(HeroSearchContainerComponent.name, () => {
   let container: HeroSearchContainerComponent;
   let heroesSpy: jasmine.Spy;
   let heroesSubscription: Subscription;
-  let heroSearch: Subject<Hero[]>;
+  const heroSearch: BehaviorSubject<Hero[]> =
+    new BehaviorSubject(femaleMarvelHeroes);
   let heroSearchSubscriptionCount: number;
   let heroServiceStub: Partial<HeroService>;
 
   beforeEach(() => {
-    heroSearch = new Subject();
     heroSearchSubscriptionCount = 0;
     const heroSearch$: Observable<Hero[]> = Observable.create(
       (observer: Observer<Hero[]>): () => void => {
-        const routeParametersSubscription: Subscription = heroSearch
+        const subscription: Subscription = heroSearch
           .subscribe(observer);
         heroSearchSubscriptionCount += 1;
 
         return (): void => {
-          routeParametersSubscription.unsubscribe();
+          subscription.unsubscribe();
           heroSearchSubscriptionCount -= 1;
         };
       });
@@ -61,7 +61,6 @@ describe(HeroSearchContainerComponent.name, () => {
       const missMarvel = 'ms. marvel';
 
       container.search(missMarvel);
-      heroSearch.next(femaleMarvelHeroes);
       tick();
 
       expect(heroesSpy).toHaveBeenCalledTimes(1);
@@ -69,7 +68,7 @@ describe(HeroSearchContainerComponent.name, () => {
   });
 
   describe('and delegates search', () => {
-    it(`to ${HeroService.prototype.constructor.name}`, () => {
+    it(`to ${HeroService.name}`, () => {
       const storm = 'storm';
       const medusa = 'medusa';
 
