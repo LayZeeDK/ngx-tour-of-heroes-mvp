@@ -31,16 +31,15 @@ describe(HeroSearchContainerComponent.name, () => {
   function resetHeroServiceStub(stub: jasmine.SpyObj<HeroService>): void {
     stub.searchHeroes
       .and.returnValue(heroSearch.pipe(
+        observeOn(asyncScheduler),
         tap(() => heroSearchSubscriptionCount += 1),
         finalize(() => heroSearchSubscriptionCount -= 1),
-        observeOn(asyncScheduler),
       ))
       .calls.reset();
   }
 
   beforeEach(() => {
-    container = new HeroSearchContainerComponent(
-      heroServiceStub as HeroService);
+    container = new HeroSearchContainerComponent(heroServiceStub);
     container.heroes$.pipe(
       takeUntil(destroy),
     ).subscribe(heroesObserver);
@@ -68,8 +67,8 @@ describe(HeroSearchContainerComponent.name, () => {
     }));
   });
 
-  describe('and delegates search', () => {
-    it(`to ${HeroService.name}`, () => {
+  describe('delegates search', () => {
+    it(`delegates to ${HeroService.name}`, () => {
       const storm = 'storm';
       const medusa = 'medusa';
 
@@ -84,7 +83,7 @@ describe(HeroSearchContainerComponent.name, () => {
       expect(heroServiceStub.searchHeroes).toHaveBeenCalledWith(medusa);
     });
 
-    it('and switches subscriptions when a new search is performed', () => {
+    it('switches subscription when a new search is performed', fakeAsync(() => {
       const rogue = 'rogue';
       const blackWidow = 'black widow';
       const captainMarvel = 'captain marvel';
@@ -92,16 +91,19 @@ describe(HeroSearchContainerComponent.name, () => {
       expect(heroSearchSubscriptionCount).toBe(0);
 
       container.search(rogue);
+      tick();
 
       expect(heroSearchSubscriptionCount).toBe(1);
 
       container.search(blackWidow);
+      tick();
 
       expect(heroSearchSubscriptionCount).toBe(1);
 
       container.search(captainMarvel);
+      tick();
 
       expect(heroSearchSubscriptionCount).toBe(1);
-    });
+    }));
   });
 });
