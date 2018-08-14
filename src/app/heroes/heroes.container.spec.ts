@@ -1,5 +1,5 @@
 import { fakeAsync, tick } from '@angular/core/testing';
-import { asyncScheduler, of as observableOf, Subject, throwError } from 'rxjs';
+import { asapScheduler, of as observableOf, Subject, throwError } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { femaleMarvelHeroes } from '../../test/female-marvel-heroes';
@@ -26,13 +26,13 @@ describe(HeroesContainerComponent.name, () => {
       .and.callFake(({ name }: Partial<Hero>) => observableOf({
         id: 42,
         name,
-      }, asyncScheduler))
+      }, asapScheduler))
       .calls.reset();
     stub.deleteHero
-      .and.callFake((hero: Hero) => observableOf(hero, asyncScheduler))
+      .and.callFake((hero: Hero) => observableOf(hero, asapScheduler))
       .calls.reset();
     stub.getHeroes
-      .and.returnValue(observableOf(femaleMarvelHeroes, asyncScheduler))
+      .and.returnValue(observableOf(femaleMarvelHeroes, asapScheduler))
       .calls.reset();
   }
 
@@ -120,7 +120,7 @@ describe(HeroesContainerComponent.name, () => {
       }
 
       heroServiceStub.deleteHero.and.returnValue(
-        throwError(new Error('timeout'), asyncScheduler));
+        throwError(new Error('timeout'), asapScheduler));
       const storm: Hero = femaleMarvelHeroes.find(x => x.name === 'Storm');
 
       container.delete(storm);

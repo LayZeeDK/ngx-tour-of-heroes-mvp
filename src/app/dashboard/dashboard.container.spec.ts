@@ -1,4 +1,4 @@
-import { asyncScheduler, of as observableOf } from 'rxjs';
+import { asapScheduler, of as observableOf } from 'rxjs';
 
 import { femaleMarvelHeroes } from '../../test/female-marvel-heroes';
 import { Hero } from '../hero';
@@ -20,7 +20,7 @@ describe(DashboardContainerComponent.name, () => {
 
     function resetHeroServiceStub(stub: jasmine.SpyObj<HeroService>): void {
       stub.getHeroes
-        .and.returnValue(observableOf(femaleMarvelHeroes, asyncScheduler))
+        .and.returnValue(observableOf(femaleMarvelHeroes, asapScheduler))
         .calls.reset();
     }
 
