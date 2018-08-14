@@ -5,6 +5,8 @@ import { multiScan } from 'rxjs-multi-scan';
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 
+function noop(): void {}
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-heroes',
@@ -25,7 +27,10 @@ export class HeroesContainerComponent {
 
   add(name: string): void {
     this.heroService.addHero({ name } as Hero)
-      .subscribe(h => this.heroAdd.next(h));
+      .subscribe({
+        next: h => this.heroAdd.next(h),
+        error: noop,
+      });
   }
 
   delete(hero: Hero): void {

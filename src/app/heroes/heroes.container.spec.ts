@@ -68,7 +68,7 @@ describe(HeroesContainerComponent.name, () => {
   });
 
   describe('adds a hero', () => {
-    it('emits all heroes when server responds', fakeAsync(() => {
+    it('emits the added hero when server responds', fakeAsync(() => {
       const wonderWoman = 'Wonder Woman';
 
       container.add(wonderWoman);
@@ -88,6 +88,21 @@ describe(HeroesContainerComponent.name, () => {
       expect(heroServiceStub.addHero).toHaveBeenCalledTimes(1);
       expect(heroServiceStub.addHero).toHaveBeenCalledWith({ name: hawkeye });
     });
+
+    it('does not emit the added hero when server fails', fakeAsync(() => {
+      heroServiceStub.addHero.and.returnValue(
+        throwError(new Error('server error'),
+          asapScheduler));
+      const scarletWitch = 'Scarlet Witch';
+
+      container.add(scarletWitch);
+      tick();
+
+      expect(observer).not.toHaveBeenCalledWith([
+        ...femaleMarvelHeroes,
+        { id: 42, name: scarletWitch },
+      ]);
+    }));
   });
 
   describe('deletes a hero', () => {
@@ -100,7 +115,7 @@ describe(HeroesContainerComponent.name, () => {
       expect(heroServiceStub.deleteHero).toHaveBeenCalledWith(gamora);
     });
 
-    it('emits heroes except the specified one immediately', fakeAsync(() => {
+    it('emits all other heroes immediately', fakeAsync(() => {
       const elektra: Hero = femaleMarvelHeroes.find(x => x.name === 'Elektra');
 
       container.delete(elektra);
@@ -110,11 +125,11 @@ describe(HeroesContainerComponent.name, () => {
         femaleMarvelHeroes.filter(x => x.id !== elektra.id));
     }));
 
-    it('but emits the heroes including the specified one when server fails', fakeAsync(() => {
+    it('emits the specified hero when server fails', fakeAsync(() => {
       function compareIdAscending(a: Hero, b: Hero): number {
-        return a.id < b.id
+        return (a.id < b.id)
           ? -1
-          : a.id > b.id
+          : (a.id > b.id)
           ? 1
           : 0;
       }
