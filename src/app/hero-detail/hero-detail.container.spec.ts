@@ -1,13 +1,12 @@
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import {
-  asyncScheduler,
-  Observable,
-  Observer,
+  asapScheduler,
+  BehaviorSubject,
   of as observableOf,
   Subject,
-  Subscription,
 } from 'rxjs';
+import { subscriptionCount } from 'rxjs-subscription-count';
 import { observeOn, take } from 'rxjs/operators';
 
 import { femaleMarvelHeroes } from '../../test/female-marvel-heroes';
@@ -18,12 +17,18 @@ import { HeroDetailContainerComponent } from './hero-detail.container';
 describe(HeroDetailContainerComponent.name, () => {
   const blackWidow: Hero = femaleMarvelHeroes
     .find(x => x.name === 'Black Widow');
-  let container: HeroDetailContainerComponent;
   const heroServiceStub: jasmine.SpyObj<HeroService> = createHeroServiceStub();
   const locationStub: jasmine.SpyObj<Location> = createLocationStub();
   let routeParameters: Subject<ParamMap>;
-  let routeParametersSubscriptionCount: number;
-  let activatedRouteFake: Partial<ActivatedRoute>;
+  let routeParametersSubscriptionCount: BehaviorSubject<number>;
+  let activatedRouteFake: ActivatedRoute;
+
+  function createContainer(): HeroDetailContainerComponent {
+    return new HeroDetailContainerComponent(
+      activatedRouteFake,
+      heroServiceStub,
+      locationStub);
+  }
 
   function createHeroServiceStub(): jasmine.SpyObj<HeroService> {
     const stub: jasmine.SpyObj<HeroService> = jasmine.createSpyObj(
@@ -78,10 +83,10 @@ describe(HeroDetailContainerComponent.name, () => {
 
   function resetHeroServiceStub(stub: jasmine.SpyObj<HeroService>): void {
     stub.getHero
-      .and.returnValue(observableOf(blackWidow, asyncScheduler))
+      .and.returnValue(observableOf(blackWidow, asapScheduler))
       .calls.reset();
     stub.updateHero
-      .and.callFake((hero: Hero) => observableOf(hero, asyncScheduler))
+      .and.callFake((hero: Hero) => observableOf(hero, asapScheduler))
       .calls.reset();
   }
 
@@ -91,42 +96,33 @@ describe(HeroDetailContainerComponent.name, () => {
 
   beforeEach(() => {
     routeParameters = new Subject();
-    routeParametersSubscriptionCount = 0;
-    const routeParameters$: Observable<ParamMap> = Observable.create(
-      (observer: Observer<ParamMap>): () => void => {
-        const routeParametersSubscription: Subscription = routeParameters
-          .subscribe(observer);
-        routeParametersSubscriptionCount += 1;
-
-        return (): void => {
-          routeParametersSubscription.unsubscribe();
-          routeParametersSubscriptionCount -= 1;
-        };
-      }).pipe(
-        observeOn(asyncScheduler),
-      );
+    routeParametersSubscriptionCount = new BehaviorSubject(0);
     activatedRouteFake = {
-      paramMap: routeParameters$,
-    } as Partial<ActivatedRoute>;
-    container = new HeroDetailContainerComponent(
-      activatedRouteFake as ActivatedRoute,
-      heroServiceStub as HeroService,
-      locationStub as Location);
+      paramMap: routeParameters.asObservable().pipe(
+        subscriptionCount(routeParametersSubscriptionCount),
+        observeOn(asapScheduler),
+      ),
+    } as Partial<ActivatedRoute> as any;
   });
 
   afterEach(() => {
     routeParameters.complete();
+    routeParametersSubscriptionCount.complete();
     resetHeroServiceStub(heroServiceStub);
     resetLocationStub(locationStub);
   });
 
   it('navigates to the previous page', () => {
+    const container: HeroDetailContainerComponent = createContainer();
+
     container.goBack();
 
     expect(locationStub.back).toHaveBeenCalledTimes(1);
   });
 
   it('saves a hero', () => {
+    const container: HeroDetailContainerComponent = createContainer();
+
     container.save(blackWidow);
 
     expect(heroServiceStub.updateHero).toHaveBeenCalledTimes(1);
@@ -135,6 +131,7 @@ describe(HeroDetailContainerComponent.name, () => {
 
   describe('hero observable', () => {
     it('emits a hero when "id" route parameter changes', async () => {
+      const container: HeroDetailContainerComponent = createContainer();
       const emitHero: Promise<Hero> = container.hero$.pipe(
         take(1),
       ).toPromise();
@@ -146,13 +143,15 @@ describe(HeroDetailContainerComponent.name, () => {
     });
 
     it('subscribes to route parameter changes on hero subscription', () => {
-      expect(routeParametersSubscriptionCount).toBe(0);
+      const container: HeroDetailContainerComponent = createContainer();
 
+      expect(routeParametersSubscriptionCount.value).toBe(0);
       container.hero$.subscribe();
-      expect(routeParametersSubscriptionCount).toBe(1);
+
+      expect(routeParametersSubscriptionCount.value).toBe(1);
       emitRouteParameters({ id: '1' });
 
-      expect(routeParametersSubscriptionCount).toBe(1);
+      expect(routeParametersSubscriptionCount.value).toBe(1);
     });
   });
 });
