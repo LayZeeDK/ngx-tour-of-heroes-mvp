@@ -17,18 +17,12 @@ import { HeroDetailContainerComponent } from './hero-detail.container';
 describe(HeroDetailContainerComponent.name, () => {
   const blackWidow: Hero = femaleMarvelHeroes
     .find(x => x.name === 'Black Widow');
+  let container: HeroDetailContainerComponent;
   const heroServiceStub: jasmine.SpyObj<HeroService> = createHeroServiceStub();
   const locationStub: jasmine.SpyObj<Location> = createLocationStub();
   let routeParameters: Subject<ParamMap>;
   let routeParametersSubscriptionCount: BehaviorSubject<number>;
   let activatedRouteFake: ActivatedRoute;
-
-  function createContainer(): HeroDetailContainerComponent {
-    return new HeroDetailContainerComponent(
-      activatedRouteFake,
-      heroServiceStub,
-      locationStub);
-  }
 
   function createHeroServiceStub(): jasmine.SpyObj<HeroService> {
     const stub: jasmine.SpyObj<HeroService> = jasmine.createSpyObj(
@@ -103,6 +97,10 @@ describe(HeroDetailContainerComponent.name, () => {
         observeOn(asapScheduler),
       ),
     } as Partial<ActivatedRoute> as any;
+    container = new HeroDetailContainerComponent(
+      activatedRouteFake,
+      heroServiceStub,
+      locationStub);
   });
 
   afterEach(() => {
@@ -113,16 +111,12 @@ describe(HeroDetailContainerComponent.name, () => {
   });
 
   it('navigates to the previous page', () => {
-    const container: HeroDetailContainerComponent = createContainer();
-
     container.goBack();
 
     expect(locationStub.back).toHaveBeenCalledTimes(1);
   });
 
   it('saves a hero', () => {
-    const container: HeroDetailContainerComponent = createContainer();
-
     container.save(blackWidow);
 
     expect(heroServiceStub.updateHero).toHaveBeenCalledTimes(1);
@@ -131,7 +125,6 @@ describe(HeroDetailContainerComponent.name, () => {
 
   describe('hero observable', () => {
     it('emits a hero when "id" route parameter changes', async () => {
-      const container: HeroDetailContainerComponent = createContainer();
       const emitHero: Promise<Hero> = container.hero$.pipe(
         take(1),
       ).toPromise();
@@ -143,8 +136,6 @@ describe(HeroDetailContainerComponent.name, () => {
     });
 
     it('subscribes to route parameter changes on hero subscription', () => {
-      const container: HeroDetailContainerComponent = createContainer();
-
       expect(routeParametersSubscriptionCount.value).toBe(0);
       container.hero$.subscribe();
 
