@@ -68,7 +68,7 @@ describe(HeroesContainerComponent.name, () => {
   });
 
   describe('adds a hero', () => {
-    it('emits the added hero when server responds', fakeAsync(() => {
+    it('emits the specified hero when server responds', fakeAsync(() => {
       const wonderWoman = 'Wonder Woman';
 
       container.add(wonderWoman);
@@ -89,7 +89,7 @@ describe(HeroesContainerComponent.name, () => {
       expect(heroServiceStub.addHero).toHaveBeenCalledWith({ name: hawkeye });
     });
 
-    it('does not emit the added hero when server fails', fakeAsync(() => {
+    it('does not emit the specified hero when server fails', fakeAsync(() => {
       heroServiceStub.addHero.and.returnValue(
         throwError(new Error('server error'),
           asapScheduler));
