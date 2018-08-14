@@ -2,6 +2,7 @@
 // https://github.com/angular/protractor/blob/master/lib/config.ts
 
 const { SpecReporter } = require('jasmine-spec-reporter');
+const puppeteer = require('puppeteer');
 
 exports.config = {
   allScriptsTimeout: 11000,
@@ -9,7 +10,11 @@ exports.config = {
     './src/**/*.e2e-spec.ts'
   ],
   capabilities: {
-    'browserName': 'chrome'
+    browserName: 'chrome',
+    chromeOptions: {
+      args: ['--headless', '--window-size=1024,768'],
+      binary: puppeteer.executablePath(),
+    },
   },
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
