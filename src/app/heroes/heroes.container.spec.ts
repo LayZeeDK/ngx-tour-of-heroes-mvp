@@ -91,8 +91,7 @@ describe(HeroesContainerComponent.name, () => {
 
     it('does not emit the specified hero when server fails', fakeAsync(() => {
       heroServiceStub.addHero.and.returnValue(
-        throwError(new Error('server error'),
-          asapScheduler));
+        throwError(new Error('server error'), asapScheduler));
       const scarletWitch = 'Scarlet Witch';
 
       container.add(scarletWitch);
