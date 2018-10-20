@@ -1,7 +1,7 @@
 # Tour of Heroes Angular app using the Model-View-Presenter pattern
 
 This project was generated with
-[Angular CLI](https://github.com/angular/angular-cli) version 6.0.
+[Angular CLI](https://github.com/angular/angular-cli) version 7.0.
 
 # Model-View-Presenter
 Container components, presentational components and presenters are combined
