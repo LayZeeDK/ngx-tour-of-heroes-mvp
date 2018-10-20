@@ -1,6 +1,10 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
+  "cli": {
+    "packageManager": "yarn"
+  },
+  "defaultProject": "toh",
   "newProjectRoot": "projects",
   "projects": {
     "toh": {
@@ -8,7 +12,11 @@
       "sourceRoot": "src",
       "projectType": "application",
       "prefix": "app",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -132,6 +140,5 @@
         }
       }
     }
-  },
-  "defaultProject": "toh"
+  }
 }
