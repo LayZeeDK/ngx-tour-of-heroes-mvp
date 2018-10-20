@@ -1,5 +1,4 @@
-import { asyncScheduler, Observable, of as observableOf } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { asapScheduler, of as observableOf } from 'rxjs';
 
 import { femaleMarvelHeroes } from '../../test/female-marvel-heroes';
 import { Hero } from '../hero';
@@ -8,30 +7,36 @@ import { DashboardContainerComponent } from './dashboard.container';
 
 describe(DashboardContainerComponent.name, () => {
   describe('emits top heroes', () => {
-    let component: DashboardContainerComponent;
-    let heroServiceStub: Partial<HeroService>;
+    function createHeroServiceStub(): jasmine.SpyObj<HeroService> {
+      const stub: jasmine.SpyObj<HeroService> = jasmine.createSpyObj(
+        HeroService.name,
+        [
+          'getHeroes',
+        ]);
+      resetHeroServiceStub(stub);
+
+      return stub;
+    }
+
+    function resetHeroServiceStub(stub: jasmine.SpyObj<HeroService>): void {
+      stub.getHeroes
+        .and.returnValue(observableOf(femaleMarvelHeroes, asapScheduler))
+        .calls.reset();
+    }
+
+    let container: DashboardContainerComponent;
+    const heroServiceStub: jasmine.SpyObj<HeroService> =
+      createHeroServiceStub();
 
     beforeEach(() => {
-      heroServiceStub = {
-        getHeroes(): Observable<Hero[]> {
-          return observableOf(femaleMarvelHeroes, asyncScheduler);
-        },
-      };
-      spyOn(heroServiceStub, 'getHeroes').and.callThrough();
-      component = new DashboardContainerComponent(
-        heroServiceStub as HeroService);
+      container = new DashboardContainerComponent(heroServiceStub);
     });
-
-    it('initially emits an empty array', async () => {
-      const heroes = await component.topHeroes$.pipe(
-        first(),
-      ).toPromise();
-
-      expect(heroes).toEqual([]);
+    afterEach(() => {
+      resetHeroServiceStub(heroServiceStub);
     });
 
     it('emits the top 4 heroes', async () => {
-      const heroes: Hero[] = await component.topHeroes$.toPromise();
+      const heroes: Hero[] = await container.topHeroes$.toPromise();
 
       expect(heroes.length).toBe(4);
       expect(heroes[0]).toEqual({ id: 2, name: 'Captain Marvel' });
@@ -40,7 +45,7 @@ describe(DashboardContainerComponent.name, () => {
     it(`immediately delegates to ${HeroService.name}`, async () => {
       expect(heroServiceStub.getHeroes).toHaveBeenCalledTimes(1);
 
-      await component.topHeroes$.toPromise();
+      await container.topHeroes$.toPromise();
 
       expect(heroServiceStub.getHeroes).toHaveBeenCalledTimes(1);
     });

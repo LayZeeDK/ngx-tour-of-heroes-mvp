@@ -1,12 +1,13 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import {
-  asyncScheduler,
+  asapScheduler,
+  BehaviorSubject,
   Observable,
-  Observer,
+  of as observableOf,
   Subject,
-  Subscription,
 } from 'rxjs';
-import { observeOn } from 'rxjs/operators';
+import { subscriptionCount } from 'rxjs-subscription-count';
+import { takeUntil } from 'rxjs/operators';
 
 import { femaleMarvelHeroes } from '../../test/female-marvel-heroes';
 import { Hero } from '../hero';
@@ -15,45 +16,51 @@ import { HeroSearchContainerComponent } from './hero-search.container';
 
 describe(HeroSearchContainerComponent.name, () => {
   let container: HeroSearchContainerComponent;
-  let heroesSpy: jasmine.Spy;
-  let heroesSubscription: Subscription;
-  let heroSearch: Subject<Hero[]>;
-  let heroSearchSubscriptionCount: number;
-  let heroServiceStub: Partial<HeroService>;
+  const destroy: Subject<void> = new Subject();
+  const heroesObserver: jasmine.Spy = jasmine.createSpy('heroes observer');
+  let searchSubscriptionCount: BehaviorSubject<number>;
+  let searchResults$: Observable<Hero[]>;
+  let heroServiceStub: jasmine.SpyObj<HeroService>;
+    // createHeroServiceStub(searchResults);
+
+  function createHeroServiceStub(): jasmine.SpyObj<HeroService> {
+    const stub: jasmine.SpyObj<HeroService> = jasmine.createSpyObj(
+      HeroService.name,
+      [
+        'searchHeroes',
+      ]);
+
+    resetHeroServiceStub(stub);
+
+    return stub;
+  }
+
+  function resetHeroServiceStub(
+    stub: jasmine.SpyObj<HeroService>,
+  ): void {
+    stub.searchHeroes
+      .and.returnValue(searchResults$)
+      .calls.reset();
+  }
 
   beforeEach(() => {
-    heroSearch = new Subject();
-    heroSearchSubscriptionCount = 0;
-    const heroSearch$: Observable<Hero[]> = Observable.create(
-      (observer: Observer<Hero[]>): () => void => {
-        const routeParametersSubscription: Subscription = heroSearch
-          .subscribe(observer);
-        heroSearchSubscriptionCount += 1;
-
-        return (): void => {
-          routeParametersSubscription.unsubscribe();
-          heroSearchSubscriptionCount -= 1;
-        };
-      });
-    heroServiceStub = {
-      searchHeroes(): Observable<Hero[]> {
-        return heroSearch$.pipe(
-          observeOn(asyncScheduler),
-        );
-      }
-    };
-    spyOn(heroServiceStub, 'searchHeroes').and.callThrough();
-    container = new HeroSearchContainerComponent(
-      heroServiceStub as HeroService);
-  });
-
-  beforeEach(() => {
-    heroesSpy = jasmine.createSpy('heroesSpy');
-    heroesSubscription = container.heroes$.subscribe(heroesSpy);
+    searchSubscriptionCount = new BehaviorSubject(0);
+    searchResults$ = observableOf(femaleMarvelHeroes, asapScheduler).pipe(
+      subscriptionCount(searchSubscriptionCount),
+    );
+    heroServiceStub = createHeroServiceStub();
+    container = new HeroSearchContainerComponent(heroServiceStub);
+    container.heroes$.pipe(takeUntil(destroy)).subscribe(heroesObserver);
   });
 
   afterEach(() => {
-    heroesSubscription.unsubscribe();
+    destroy.next();
+    heroesObserver.calls.reset();
+    searchSubscriptionCount.complete();
+  });
+
+  afterAll(() => {
+    destroy.complete();
   });
 
   describe('emits filtered heroes', () => {
@@ -61,15 +68,14 @@ describe(HeroSearchContainerComponent.name, () => {
       const missMarvel = 'ms. marvel';
 
       container.search(missMarvel);
-      heroSearch.next(femaleMarvelHeroes);
       tick();
 
-      expect(heroesSpy).toHaveBeenCalledTimes(1);
+      expect(heroesObserver).toHaveBeenCalledTimes(1);
     }));
   });
 
-  describe('and delegates search', () => {
-    it(`to ${HeroService.prototype.constructor.name}`, () => {
+  describe('delegates search', () => {
+    it(`delegates to ${HeroService.name}`, () => {
       const storm = 'storm';
       const medusa = 'medusa';
 
@@ -77,27 +83,31 @@ describe(HeroSearchContainerComponent.name, () => {
 
       expect(heroServiceStub.searchHeroes).toHaveBeenCalledTimes(1);
       expect(heroServiceStub.searchHeroes).toHaveBeenCalledWith(storm);
+
       container.search(medusa);
 
       expect(heroServiceStub.searchHeroes).toHaveBeenCalledTimes(2);
       expect(heroServiceStub.searchHeroes).toHaveBeenCalledWith(medusa);
     });
 
-    it('and switches subscriptions when a new search is performed', () => {
+    it('switches subscription when a new search is performed', () => {
       const rogue = 'rogue';
       const blackWidow = 'black widow';
       const captainMarvel = 'captain marvel';
 
-      expect(heroSearchSubscriptionCount).toBe(0);
+      expect(searchSubscriptionCount.value).toBe(0);
+
       container.search(rogue);
 
-      expect(heroSearchSubscriptionCount).toBe(1);
+      expect(searchSubscriptionCount.value).toBe(1);
+
       container.search(blackWidow);
 
-      expect(heroSearchSubscriptionCount).toBe(1);
+      expect(searchSubscriptionCount.value).toBe(1);
+
       container.search(captainMarvel);
 
-      expect(heroSearchSubscriptionCount).toBe(1);
+      expect(searchSubscriptionCount.value).toBe(1);
     });
   });
 });

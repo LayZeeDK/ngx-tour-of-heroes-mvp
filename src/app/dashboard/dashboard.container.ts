@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
@@ -12,7 +12,6 @@ import { HeroService } from '../hero.service';
 })
 export class DashboardContainerComponent {
   topHeroes$: Observable<Hero[]> = this.heroService.getHeroes().pipe(
-    startWith([]),
     map(heroes => heroes.slice(1, 5)),
   );
 
