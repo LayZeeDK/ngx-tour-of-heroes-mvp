@@ -48,7 +48,7 @@
     "angular-in-memory-web-api": "~0.6.1",
     "core-js": "^2.5.7",
     "rxjs": "^6.3.3",
-    "rxjs-multi-scan": "^1.0.0",
+    "rxjs-multi-scan": "^1.0.2",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {

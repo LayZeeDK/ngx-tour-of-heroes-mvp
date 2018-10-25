@@ -1,11 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { noop, Observable, Subject } from 'rxjs';
 import { multiScan } from 'rxjs-multi-scan';
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
-
-function noop(): void {}
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,10 +15,12 @@ export class HeroesContainerComponent {
   private heroRemove: Subject<Hero> = new Subject();
 
   heroes$: Observable<Hero[]> = multiScan(
-    this.heroService.getHeroes(), (heroes, loadedHeroes) => [...heroes, ...loadedHeroes],
-    // TODO: fix `multiScan` typing
-    this.heroAdd as any, (heroes, hero) => [...heroes, hero],
-    this.heroRemove as any, (heroes, hero) => heroes.filter(h => h !== hero),
+    this.heroService.getHeroes(),
+    (heroes, loadedHeroes) => [...heroes, ...loadedHeroes],
+    this.heroAdd,
+    (heroes, hero) => [...heroes, hero],
+    this.heroRemove,
+    (heroes, hero) => heroes.filter(h => h !== hero),
     []);
 
   constructor(private heroService: HeroService) {}

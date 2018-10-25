@@ -6137,10 +6137,10 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-rxjs-multi-scan@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/rxjs-multi-scan/-/rxjs-multi-scan-1.0.0.tgz#12640af344f4a0d6433eef63f7b1e609929b7038"
-  integrity sha1-EmQK80T0oNZDPu9j97HmCZKbcDg=
+rxjs-multi-scan@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/rxjs-multi-scan/-/rxjs-multi-scan-1.0.2.tgz#ac54a8f0cb7378e44a8365a7a629d5feff3abe5e"
+  integrity sha512-ClKvo7K66uDAPMZXCjk/zbBRKwUqKAri3juGmC3Da4oTeoimLpmBEq5zOakBzm0lZRnNYOG+GwRvJb0Ptvqvcw==
   dependencies:
     tslib "^1.9.0"
 
