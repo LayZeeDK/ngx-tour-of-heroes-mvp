@@ -99,7 +99,7 @@ describe(HeroDetailContainerComponent.name, () => {
     } as Partial<ActivatedRoute> as any;
     container = new HeroDetailContainerComponent(
       activatedRouteFake,
-      heroServiceStub,
+      heroServiceStub as unknown as HeroService,
       locationStub);
   });
 

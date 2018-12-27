@@ -29,7 +29,8 @@ describe(DashboardContainerComponent.name, () => {
       createHeroServiceStub();
 
     beforeEach(() => {
-      container = new DashboardContainerComponent(heroServiceStub);
+      container = new DashboardContainerComponent(
+        heroServiceStub as unknown as HeroService);
     });
     afterEach(() => {
       resetHeroServiceStub(heroServiceStub);
