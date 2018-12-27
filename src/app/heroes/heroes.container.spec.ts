@@ -42,7 +42,8 @@ describe(HeroesContainerComponent.name, () => {
   const observer: jasmine.Spy = jasmine.createSpy('heroes observer');
 
   beforeEach(fakeAsync(() => {
-    container = new HeroesContainerComponent(heroServiceStub);
+    container = new HeroesContainerComponent(
+      heroServiceStub as unknown as HeroService);
     container.heroes$.pipe(takeUntil(destroy)).subscribe(observer);
     tick();
   }));

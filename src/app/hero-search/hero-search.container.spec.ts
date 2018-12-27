@@ -49,7 +49,8 @@ describe(HeroSearchContainerComponent.name, () => {
       subscriptionCount(searchSubscriptionCount),
     );
     heroServiceStub = createHeroServiceStub();
-    container = new HeroSearchContainerComponent(heroServiceStub);
+    container = new HeroSearchContainerComponent(
+      heroServiceStub as unknown as HeroService);
     container.heroes$.pipe(takeUntil(destroy)).subscribe(heroesObserver);
   });
 
