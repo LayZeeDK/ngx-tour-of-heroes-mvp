@@ -14,11 +14,15 @@ describe(HeroesPresenter.name, () => {
       addSpy = jasmine.createSpy('heroNameSpy');
       presenter.add$.subscribe(addSpy);
     });
+    afterEach(() => {
+      presenter.ngOnDestroy();
+    });
 
     it('when a user enters it', () => {
       const captainMarvel = 'Captain Marvel';
 
-      presenter.addHero(captainMarvel);
+      presenter.nameControl.setValue(captainMarvel);
+      presenter.addHero();
 
       expect(addSpy).toHaveBeenCalledTimes(1);
       expect(addSpy).toHaveBeenCalledWith(captainMarvel);
@@ -27,7 +31,8 @@ describe(HeroesPresenter.name, () => {
     it('that is trimmed of white space', () => {
       const medusa = 'Medusa';
 
-      presenter.addHero(' \t\t\t ' + medusa + ' \t\r\n  \r\n ');
+      presenter.nameControl.setValue(' \t\t\t ' + medusa + ' \t\r\n  \r\n ');
+      presenter.addHero();
 
       expect(addSpy).toHaveBeenCalledWith(medusa);
     });
@@ -36,8 +41,10 @@ describe(HeroesPresenter.name, () => {
       const blank = '';
       const whiteSpace = ' \r\n  \t   ';
 
-      presenter.addHero(blank);
-      presenter.addHero(whiteSpace);
+      presenter.nameControl.setValue(blank);
+      presenter.addHero();
+      presenter.nameControl.setValue(whiteSpace);
+      presenter.addHero();
 
       expect(addSpy).not.toHaveBeenCalled();
     });

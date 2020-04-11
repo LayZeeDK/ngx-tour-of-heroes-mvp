@@ -2,10 +2,10 @@
 
 <div>
   <label>Hero name:
-    <input #heroName />
+    <input [formControl]="nameControl" />
   </label>
   <!-- (click) passes input value to add() and then clears the input -->
-  <button (click)="addHero(heroName.value); heroName.value=''">
+  <button (click)="addHero()">
     add
   </button>
 </div>

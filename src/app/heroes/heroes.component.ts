@@ -3,12 +3,10 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
 } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 
 import { Hero } from '../hero';
 import { HeroesPresenter } from './heroes.presenter';
@@ -20,27 +18,22 @@ import { HeroesPresenter } from './heroes.presenter';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [HeroesPresenter],
 })
-export class HeroesComponent implements OnDestroy, OnInit {
+export class HeroesComponent implements OnInit {
   @Input() heroes: Hero[];
   @Input() title: string;
   @Output() add: EventEmitter<string> = new EventEmitter();
   @Output() remove: EventEmitter<Hero> = new EventEmitter();
-  private destroy: Subject<void> = new Subject();
+  get nameControl(): FormControl {
+    return this.presenter.nameControl;
+  }
 
   constructor(private presenter: HeroesPresenter) {}
 
   ngOnInit(): void {
-    this.presenter.add$.pipe(
-      takeUntil(this.destroy),
-    ).subscribe(name => this.add.emit(name));
+    this.presenter.add$.subscribe(name => this.add.emit(name));
   }
 
-  ngOnDestroy(): void {
-    this.destroy.next();
-    this.destroy.complete();
-  }
-
-  addHero(name: string): void {
-    this.presenter.addHero(name);
+  addHero(): void {
+    this.presenter.addHero();
   }
 }
