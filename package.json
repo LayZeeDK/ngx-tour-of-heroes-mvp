@@ -47,7 +47,7 @@
     "@angular/router": "^7.1.4",
     "angular-in-memory-web-api": "~0.8.0",
     "core-js": "^2.6.1",
-    "puppeteer": "^1.11.0",
+    "puppeteer": "^1.13.0",
     "rxjs": "^6.3.3",
     "rxjs-multi-scan": "^1.0.2",
     "tslib": "^1.9.3",
